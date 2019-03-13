@@ -11,4 +11,4 @@ To perform a release you need:
 * set env variables GIT_USER and GIT_PASSWORD
 * run following command you need to set development version and release version:
 
-    mvn release:clean release:prepare release:perform -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}
+   ` mvn release:clean release:prepare release:perform -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}`
