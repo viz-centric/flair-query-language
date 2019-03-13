@@ -10,7 +10,7 @@ Contains:
 To perform a release you need:
 *  have configured credentials in settings.xml
 
-    `
+    ```
     <settings>  
         <servers>  
             <server>
@@ -20,7 +20,9 @@ To perform a release you need:
             </server>   
         </servers>
     </settings>   
-    `
+    ```
 * run following command you need to set development version and release version:
 
-   ` mvn release:clean release:prepare release:perform -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}`
+   ``` 
+   mvn release:clean release:prepare release:perform -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}
+   ```
