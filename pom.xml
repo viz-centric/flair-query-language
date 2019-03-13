@@ -20,6 +20,7 @@
         <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
         <maven.release.plugin>2.5.3</maven.release.plugin>
         <maven.scm.provider.gitexe>1.9.5</maven.scm.provider.gitexe>
+        <maven.surefire.plugin>2.22.1</maven.surefire.plugin>
     </properties>
     <scm>
         <connection>
@@ -137,6 +138,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin}</version>
                 <configuration>
                     <!-- Force alphabetical order to have a reproducible build -->
                     <runOrder>alphabetical</runOrder>
