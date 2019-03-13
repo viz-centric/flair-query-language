@@ -8,7 +8,19 @@ Contains:
 # Release
 
 To perform a release you need:
-* set env variables **GIT_USER** and **GIT_PASSWORD**
+*  have configured credentials in settings.xml
+
+    `
+    <settings>  
+        <servers>  
+            <server>
+                <id>github-credentials</id>  
+                <username>myUser</username>  
+                <password>myPassword</password>  
+            </server>   
+        </servers>
+    </settings>   
+    `
 * run following command you need to set development version and release version:
 
    ` mvn release:clean release:prepare release:perform -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}`

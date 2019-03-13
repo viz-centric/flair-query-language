@@ -21,14 +21,15 @@
         <maven.release.plugin>2.5.3</maven.release.plugin>
         <maven.scm.provider.gitexe>1.9.5</maven.scm.provider.gitexe>
         <maven.surefire.plugin>2.22.1</maven.surefire.plugin>
+        <project.scm.id>github-credentials</project.scm.id>
     </properties>
     <scm>
         <connection>
-            scm:git:https://${GIT_USER}:${GIT_PASSWORD}@github.com/viz-centric/flair-query-language.git
+            scm:git:https://github.com/viz-centric/flair-query-language.git
         </connection>
-        <url>https://${GIT_USER}:${GIT_PASSWORD}@github.com/viz-centric/flair-query-language.git</url>
+        <url>https://github.com/viz-centric/flair-query-language.git</url>
         <developerConnection>
-            scm:git:https://${GIT_USER}:${GIT_PASSWORD}@github.com/viz-centric/flair-query-language.git
+            scm:git:https://github.com/viz-centric/flair-query-language.git
         </developerConnection>
         <tag>HEAD</tag>
     </scm>
