@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.project.bi</groupId>
     <artifactId>flair-query-language</artifactId>
@@ -15,20 +16,21 @@
         <junit.version>4.12</junit.version>
         <mockito.version>2.16.0</mockito.version>
         <nexus-staging.version>1.5.1</nexus-staging.version>
-        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+        <maven.release.plugin>2.5.3</maven.release.plugin>
+        <maven.scm.provider.gitexe>1.9.5</maven.scm.provider.gitexe>
     </properties>
     <scm>
         <connection>
-            scm:git:https://github.com/viz-centric/flair-query-language.git
+            scm:git:https://${GIT_USER}:${GIT_PASSWORD}@github.com/viz-centric/flair-query-language.git
         </connection>
-        <url>https://github.com/viz-centric/flair-query-language.git</url>
+        <url>https://${GIT_USER}:${GIT_PASSWORD}@github.com/viz-centric/flair-query-language.git</url>
         <developerConnection>
-            scm:git:https://github.com/viz-centric/flair-query-language.git
+            scm:git:https://${GIT_USER}:${GIT_PASSWORD}@github.com/viz-centric/flair-query-language.git
         </developerConnection>
         <tag>HEAD</tag>
-  </scm>
+    </scm>
     <distributionManagement>
         <repository>
             <id>dev-azure-com-vizcentric-flair-query-language</id>
@@ -99,39 +101,6 @@
         </dependency>
     </dependencies>
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>${nexus-staging.version}</version>
-                    <executions>
-                        <execution>
-                            <id>default-deploy</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>deploy</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <skipStaging>true</skipStaging>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>${maven-release-plugin.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-provider-gitexe</artifactId>
-                            <version>1.9.4</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -187,6 +156,22 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven.release.plugin}</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <releaseProfiles>releases</releaseProfiles>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>${maven.scm.provider.gitexe}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -198,7 +183,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>${maven-compiler.version}</version>
-                        <configuration> <!-- Compile java 8 compatible bytecode -->
+                        <configuration>                            <!-- Compile java 8 compatible bytecode -->
                             <source>${java.version}</source>
                             <target>${java.version}</target>
                         </configuration>
@@ -228,25 +213,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${nexus-staging.version}</version>
-                        <executions>
-                            <execution>
-                                <id>default-deploy</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>deploy</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <serverId>maven-releases</serverId>
-                            <nexusUrl>https://devsupport-vizcentric.com/nexus/</nexusUrl>
-                            <skipStaging>true</skipStaging>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
