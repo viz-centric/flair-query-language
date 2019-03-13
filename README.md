@@ -4,8 +4,15 @@
 Contains:
 - flair query language grammar
 - different compiler implementations for different data sources
+## Build
 
-# Release
+To build the application and install in local maven repository use
+
+```
+mvn clean install
+```
+
+## Release
 
 To perform a release you need:
 *  have configured credentials in settings.xml
