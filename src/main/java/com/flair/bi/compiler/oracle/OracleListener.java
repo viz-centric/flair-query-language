@@ -23,7 +23,23 @@ public class OracleListener extends SQLListener {
 	            property.put(ctx, ctx.getText());
 	     }
 	}
-	
+
+	@Override
+	public void exitLimit_expr(FQLParser.Limit_exprContext ctx) {
+		StringBuilder sb = new StringBuilder();
+
+		if (ctx.expr().size() > 1) {
+			sb.append("OFFSET ")
+				.append(ctx.expr(1).getText())
+				.append(" ROWS ");
+		}
+		sb.append("FETCH NEXT ")
+				.append(ctx.expr(0).getText())
+				.append(" ROWS ONLY");
+
+		property.put(ctx, sb.toString());
+	}
+
 	@Override
 	public void exitExpr(ExprContext ctx) {
 		  StringBuilder str = new StringBuilder();
