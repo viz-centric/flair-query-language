@@ -46,6 +46,18 @@ public class OracleFlairCompilerTest {
     }
 
     @Test
+    public void selectWithLimit() throws CompilationException {
+        stmtTest("SELECT * FROM ORDERS LIMIT 1",
+                "SELECT * FROM ORDERS FETCH NEXT 1 ROWS ONLY");
+    }
+
+    @Test
+    public void selectWithLimitAndOffset() throws CompilationException {
+        stmtTest("SELECT * FROM ORDERS LIMIT 1 OFFSET 5",
+                "SELECT * FROM ORDERS OFFSET 5 ROWS FETCH NEXT 1 ROWS ONLY");
+    }
+
+    @Test
     public void showTablesLikeLimit() throws CompilationException {
         stmtTest("show tables like '%pera%' limit 4",
                 "SELECT table_name FROM all_tables WHERE table_name LIKE '%pera%' FETCH NEXT 4 ROWS ONLY");
