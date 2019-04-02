@@ -66,3 +66,8 @@ steps:
     goals: 'deploy'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   displayName: 'Compile, Test, Package & Deploy the artifact'
+
+- script: |
+    mvn -B release:prepare
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  displayName: 'Maven release'
