@@ -68,6 +68,7 @@ steps:
   displayName: 'Compile, Test, Package & Deploy the artifact'
 
 - script: |
+    git checkout master
     git config user.name "Release Bot"
     git config user.email "admin@vizcentric.com"
     mvn -B release:prepare
