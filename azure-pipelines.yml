@@ -72,7 +72,8 @@ steps:
     git checkout master
     git config user.name "Release Bot"
     git config user.email "admin@vizcentric.com"
-    mvn -B release:prepare
+    echo username ${GIT_USERNAME}
+    mvn -B release:prepare -Dusername=${GIT_USERNAME} -Dpassword=${GIT_PASSWORD}
   env:
     GIT_USERNAME: $(GIT_USERNAME)
     GIT_PASSWORD: $(GIT_PASSWORD)
