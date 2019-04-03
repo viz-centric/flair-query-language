@@ -72,10 +72,9 @@ steps:
     git checkout master
     git config user.name "Release Bot"
     git config user.email "admin@vizcentric.com"
-    echo username ${GIT_USERNAME}
     mvn -B release:prepare -Dusername=${GIT_USERNAME} -Dpassword=${GIT_PASSWORD}
   env:
     GIT_USERNAME: $(GIT_USERNAME)
     GIT_PASSWORD: $(GIT_PASSWORD)
-  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   displayName: 'Maven release'
