@@ -24,7 +24,7 @@
     </properties>
     <scm>
         <connection>
-            scm:git:git@github.com/viz-centric/flair-query-language.git
+            scm:git:https://@github.com/viz-centric/flair-query-language.git
         </connection>
         <url>https://github.com/viz-centric/flair-query-language.git</url>
         <developerConnection>
