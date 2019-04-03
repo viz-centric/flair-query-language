@@ -72,7 +72,7 @@ steps:
     git checkout master
     git config user.name "Release Bot"
     git config user.email "admin@vizcentric.com"
-    mvn -B release:prepare -Dusername=${GIT_USERNAME} -Dpassword=${GIT_PASSWORD} "-DscmCommentPrefix=[skip ci]"
+    mvn -B release:prepare -Dusername=${GIT_USERNAME} -Dpassword=${GIT_PASSWORD} "-DscmCommentPrefix=[skip ci]" -DskipTests
   env:
     GIT_USERNAME: $(GIT_USERNAME)
     GIT_PASSWORD: $(GIT_PASSWORD)
