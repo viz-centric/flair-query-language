@@ -22,9 +22,7 @@ public class RedshiftFlairCompilerTest {
     }
 
     private void stmtTest(String stmt, String result) throws CompilationException {
-        FlairQuery query = new FlairQuery();
-
-        query.setStatement(stmt);
+        FlairQuery query = new FlairQuery(stmt, false);
         StringWriter writer = new StringWriter();
         compiler.compile(query, writer);
 
