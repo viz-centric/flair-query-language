@@ -1,6 +1,5 @@
 package com.flair.bi.compiler.spark;
 
-import com.flair.bi.compiler.athena.AthenaFlairCompiler;
 import com.project.bi.exceptions.CompilationException;
 import com.project.bi.query.FlairQuery;
 import org.junit.Assert;
@@ -11,7 +10,7 @@ import java.io.StringWriter;
 public class SparkFlairCompilerTest {
 
 
-    private AthenaFlairCompiler compiler = new AthenaFlairCompiler();
+    private SparkFlairCompiler compiler = new SparkFlairCompiler();
 
     private void stmtTest(String stmt) throws CompilationException {
         stmtTest(stmt, stmt);
@@ -110,7 +109,7 @@ public class SparkFlairCompilerTest {
     @Test
     public void randTest() throws CompilationException {
         stmtTest("select sum(price * rand()) as price from transactions where data like '%pera%'",
-                "select sum(price * random()) as price from transactions where data like '*pera*'");
+                "select sum(price * rand()) as price from transactions where data like '*pera*'");
 
         stmtTest("select sum(price * random()) as price from transactions where data like '%pera%'",
                 "select sum(price * random()) as price from transactions where data like '*pera*'");
@@ -125,13 +124,13 @@ public class SparkFlairCompilerTest {
     @Test
     public void showTablesLike() throws CompilationException {
         stmtTest("show tables like '%pera%'",
-                "SHOW TABLES '*pera*'");
+                "SHOW TABLES like '*pera*'");
     }
 
     @Test
     public void showTablesLikeLimit() throws CompilationException {
         stmtTest("show tables like '%pera%' limit 4",
-                "SHOW TABLES '*pera*'");
+                "SHOW TABLES like '*pera*'");
     }
 
     @Test

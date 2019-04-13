@@ -31,4 +31,19 @@ public class SparkListener extends SQLListener {
 
         super.exitExpr(ctx);
     }
+
+    @Override
+    public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SHOW TABLES");
+
+        if (ctx.describe_stmt_like() != null) {
+            sb.append(" ")
+                    .append(ctx.describe_stmt_like().K_LIKE().getText())
+                    .append(' ')
+                    .append(ctx.describe_stmt_like().expr().getText().replaceAll("%", "*"));
+        }
+
+        property.put(ctx, sb.toString());
+    }
 }
