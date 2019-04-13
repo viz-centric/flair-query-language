@@ -4,23 +4,45 @@ import com.flair.bi.compiler.postgres.PostgresListener;
 import com.flair.bi.grammar.FQLParser;
 
 import java.io.Writer;
+import java.util.Optional;
 
 public class AthenaListener extends PostgresListener {
 
-	public AthenaListener(Writer writer) {
-		super(writer);
-	}
+    public AthenaListener(Writer writer) {
+        super(writer);
+    }
 
-	@Override
-	public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SHOW TABLES");
+    @Override
+    public void exitExpr(FQLParser.ExprContext ctx) {
+        StringBuilder sb = new StringBuilder();
 
-		if (ctx.describe_stmt_like() != null) {
-			sb.append(" ").append(ctx.describe_stmt_like().expr().getText().replaceAll("%", "*"));
-		}
+        Optional<FQLParser.Binary_operatorContext> optional = Optional
+                .ofNullable(ctx.binary_operator())
+                .filter(x -> x.K_LIKE() != null);
+        if (optional.isPresent()) {
+            sb
+                    .append(property.get(ctx.expr(0)))
+                    .append(" ")
+                    .append(optional.get().getText())
+                    .append(" ")
+                    .append(property.get(ctx.expr(1)).replaceAll("%", "*"));
+            property.put(ctx, sb.toString());
+            return;
+        }
 
-		property.put(ctx, sb.toString());
-	}
+        super.exitExpr(ctx);
+    }
+
+    @Override
+    public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SHOW TABLES");
+
+        if (ctx.describe_stmt_like() != null) {
+            sb.append(" ").append(ctx.describe_stmt_like().expr().getText().replaceAll("%", "*"));
+        }
+
+        property.put(ctx, sb.toString());
+    }
 
 }

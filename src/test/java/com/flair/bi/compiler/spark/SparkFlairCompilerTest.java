@@ -1,5 +1,6 @@
-package com.flair.bi.compiler.athena;
+package com.flair.bi.compiler.spark;
 
+import com.flair.bi.compiler.athena.AthenaFlairCompiler;
 import com.project.bi.exceptions.CompilationException;
 import com.project.bi.query.FlairQuery;
 import org.junit.Assert;
@@ -7,7 +8,7 @@ import org.junit.Test;
 
 import java.io.StringWriter;
 
-public class AthenaFlairCompilerTest {
+public class SparkFlairCompilerTest {
 
 
     private AthenaFlairCompiler compiler = new AthenaFlairCompiler();
