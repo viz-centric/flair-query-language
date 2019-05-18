@@ -107,6 +107,12 @@ public class AthenaFlairCompilerTest {
     }
 
     @Test
+    public void selectWithQuotes() throws CompilationException {
+        stmtTest("SELECT replace(product_name,'''','''Women''','Aster''isk','''More''test''') FROM ecommerce",
+                "SELECT replace(product_name,'''','''Women''','Aster''isk','''More''test''') FROM ecommerce");
+    }
+
+    @Test
     public void randTest() throws CompilationException {
         stmtTest("select sum(price * rand()) as price from transactions where data like '%pera%'",
                 "select sum(price * random()) as price from transactions where data like '*pera*'");

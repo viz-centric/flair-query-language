@@ -118,6 +118,12 @@ public class PostgresFlairCompilerTest {
     }
 
     @Test
+    public void selectWithQuotes() throws CompilationException {
+        stmtTest("SELECT replace(product_name,'''','''Women''','Aster''isk','''More''test''') FROM ecommerce",
+                "SELECT replace(product_name,'''','''Women''','Aster''isk','''More''test''') FROM ecommerce");
+    }
+
+    @Test
     public void showTables() throws CompilationException {
         stmtTest("show tables",
                 "SELECT tablename FROM pg_catalog.pg_tables");
