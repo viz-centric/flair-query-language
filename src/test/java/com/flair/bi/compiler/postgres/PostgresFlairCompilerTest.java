@@ -146,4 +146,10 @@ public class PostgresFlairCompilerTest {
         stmtTest("show tables like '%pera%' limit 5",
                 "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename LIKE '%pera%' LIMIT 5");
     }
+
+    @Test
+    public void parseDateFunction() throws CompilationException {
+        stmtTest("select date(custom_field, 'yyyy-MM-dd') from my_table where a = 1",
+                "select to_char(custom_field::timestamp, 'yyyy-MM-dd') from my_table where a = 1");
+    }
 }
