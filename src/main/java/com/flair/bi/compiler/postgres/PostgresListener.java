@@ -68,50 +68,50 @@ public class PostgresListener extends SQLListener {
                         
 
         //func_call_expr
-        if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("year".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || 
-        		"week".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "month".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || 
-        		"quarter".equalsIgnoreCase(ctx.func_call_expr().start.getText())|| "DAY".equalsIgnoreCase(ctx.func_call_expr().start.getText())|| 
-        		"HOUR".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) 
-        {
-        	
-        	str.append("date_part(")       	
-        	.append("'"+ctx.func_call_expr().start.getText()+"',");
-        	if(ctx.func_call_expr().getChild(2).getText().contains(",")) {
-        		str.append("TO_DATE(")
-        		    .append(ctx.func_call_expr().getChild(2).getText())
-        		    .append(")");
-        	}
-        	else {
-        	str.append(ctx.func_call_expr().getChild(2).getText());
-        	}
-        	str.append("::timestamp)");
-        }
-        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText()) 
-        		|| "YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText()))){
-        	str.append("to_char(");
-        	if(ctx.func_call_expr().getChild(2).getText().contains(",") ) {
-        		str.append("TO_DATE( ")
-        		.append(ctx.func_call_expr().getChild(2).getText()+")");
-        		
-        	}else {
-        	str.append(ctx.func_call_expr().getChild(2).getText());
-        	}
-        	
-        	if("YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-        		str.append(",'YYYY-MM')");
-        	}
-        	else if("YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-        		str.append(",'YYYY-WW')");
-        	}
-        	else if("YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-        		str.append(",'YYYY-Q')");
-        	}
-        	
-        }
-        else {
-        	 Optional.ofNullable(ctx.func_call_expr())
-             .map(property::get)
-             .ifPresent(str::append);
+        if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && ("date".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+            str.append("to_char(")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append("::timestamp, ")
+                    .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
+                    .append(")");
+        } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("year".equalsIgnoreCase(ctx.func_call_expr().start.getText()) ||
+                "week".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "month".equalsIgnoreCase(ctx.func_call_expr().start.getText()) ||
+                "quarter".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "DAY".equalsIgnoreCase(ctx.func_call_expr().start.getText()) ||
+                "HOUR".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+
+            str.append("date_part(")
+                    .append("'" + ctx.func_call_expr().start.getText() + "',");
+            if (ctx.func_call_expr().getChild(2).getText().contains(",")) {
+                str.append("TO_DATE(")
+                        .append(ctx.func_call_expr().getChild(2).getText())
+                        .append(")");
+            } else {
+                str.append(ctx.func_call_expr().getChild(2).getText());
+            }
+            str.append("::timestamp)");
+        } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())
+                || "YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+            str.append("to_char(");
+            if (ctx.func_call_expr().getChild(2).getText().contains(",")) {
+                str.append("TO_DATE( ")
+                        .append(ctx.func_call_expr().getChild(2).getText() + ")");
+
+            } else {
+                str.append(ctx.func_call_expr().getChild(2).getText());
+            }
+
+            if ("YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+                str.append(",'YYYY-MM')");
+            } else if ("YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+                str.append(",'YYYY-WW')");
+            } else if ("YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+                str.append(",'YYYY-Q')");
+            }
+
+        } else {
+            Optional.ofNullable(ctx.func_call_expr())
+                    .map(property::get)
+                    .ifPresent(str::append);
         }
         
       
