@@ -47,7 +47,13 @@ public class MySQLListener extends SQLListener {
                         .append(property.get(ctx.expr(1))));
         
         //func_call_expr 
-        if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+        if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+            str.append("date_format(CAST(")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
+                    .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
+                    .append(")");
+        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
         	str.append("EXTRACT(")       	
         	.append("YEAR_MONTH")
         	.append(" FROM ");
@@ -181,5 +187,5 @@ public class MySQLListener extends SQLListener {
         property.put(ctx, str.toString());
         
 	}
-    
+
 }
