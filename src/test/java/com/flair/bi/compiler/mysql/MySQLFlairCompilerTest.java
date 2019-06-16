@@ -1,4 +1,4 @@
-package com.flair.bi.compiler.postgres;
+package com.flair.bi.compiler.mysql;
 
 import com.project.bi.exceptions.CompilationException;
 import com.project.bi.query.FlairQuery;
@@ -7,13 +7,9 @@ import org.junit.Test;
 
 import java.io.StringWriter;
 
-/**
- * Unit tests for {@link PostgresFlairCompiler}
- */
-public class PostgresFlairCompilerTest {
+public class MySQLFlairCompilerTest {
 
-
-    private PostgresFlairCompiler compiler = new PostgresFlairCompiler();
+    private MySQLFlairCompiler compiler = new MySQLFlairCompiler();
 
     private void stmtTest(String stmt) throws CompilationException {
         stmtTest(stmt, stmt);
@@ -104,17 +100,9 @@ public class PostgresFlairCompilerTest {
     }
 
     @Test
-    public void whereTestCase8() throws CompilationException {
-        stmtTest("select * from transactions where data like '%pera%'");
-    }
-
-    @Test
-    public void randTest() throws CompilationException {
-        stmtTest("select sum(price * rand()) as price from transactions where data like '%pera%'",
-                "select sum(price * random()) as price from transactions where data like '%pera%'");
-
-        stmtTest("select sum(price * random()) as price from transactions where data like '%pera%'",
-                "select sum(price * random()) as price from transactions where data like '%pera%'");
+    public void likeExpressionPercentTurnsToStar() throws CompilationException {
+        stmtTest("select * from transactions where data like '%pera%'",
+                "select * from transactions where data like '%pera%'");
     }
 
     @Test
@@ -124,32 +112,38 @@ public class PostgresFlairCompilerTest {
     }
 
     @Test
+    public void randTest() throws CompilationException {
+        stmtTest("select sum(price * random()) as price from transactions where data like '%pera%'",
+                "select sum(price * random()) as price from transactions where data like '%pera%'");
+    }
+
+    @Test
     public void showTables() throws CompilationException {
         stmtTest("show tables",
-                "SELECT tablename FROM pg_catalog.pg_tables");
+                "SHOW TABLES");
     }
 
     @Test
     public void showTablesLike() throws CompilationException {
         stmtTest("show tables like '%pera%'",
-                "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename LIKE '%pera%'");
-    }
-
-    @Test
-    public void showTablesLimit() throws CompilationException {
-        stmtTest("show tables limit 4",
-                "SELECT tablename FROM pg_catalog.pg_tables LIMIT 4");
+                "SHOW TABLES LIKE '%pera%'");
     }
 
     @Test
     public void showTablesLikeLimit() throws CompilationException {
-        stmtTest("show tables like '%pera%' limit 5",
-                "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename LIKE '%pera%' LIMIT 5");
+        stmtTest("show tables like '%pera%' limit 4",
+                "SHOW TABLES LIKE '%pera%'");
+    }
+
+    @Test
+    public void showTablesLimit() throws CompilationException {
+        stmtTest("show tables limit 5",
+                "SHOW TABLES");
     }
 
     @Test
     public void parseDateFunction() throws CompilationException {
-        stmtTest("select datefmt(custom_field, 'yyyy-MM-dd') from my_table where a = 1",
-                "select to_char(custom_field::timestamp, 'yyyy-MM-dd') from my_table where a = 1");
+        stmtTest("select datefmt(custom_field, '%y %M %d') from my_table where a = 1",
+                "select date_format(CAST(custom_field AS TIMESTAMP), '%y %M %d') from my_table where a = 1");
     }
 }

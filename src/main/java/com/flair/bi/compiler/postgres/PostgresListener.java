@@ -69,7 +69,7 @@ public class PostgresListener extends SQLListener {
 
         //func_call_expr
         if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
-                && ("date".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+                && ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("to_char(")
                     .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append("::timestamp, ")
                     .append(ctx.func_call_expr().getChild(2).getChild(2).getText())

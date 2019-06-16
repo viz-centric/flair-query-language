@@ -1,12 +1,12 @@
 package com.flair.bi.compiler.athena;
 
-import com.flair.bi.compiler.postgres.PostgresListener;
+import com.flair.bi.compiler.mysql.MySQLListener;
 import com.flair.bi.grammar.FQLParser;
 
 import java.io.Writer;
 import java.util.Optional;
 
-public class AthenaListener extends PostgresListener {
+public class AthenaListener extends MySQLListener {
 
     public AthenaListener(Writer writer) {
         super(writer);

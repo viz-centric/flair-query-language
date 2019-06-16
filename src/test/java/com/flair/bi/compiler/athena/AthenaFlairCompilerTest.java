@@ -114,9 +114,6 @@ public class AthenaFlairCompilerTest {
 
     @Test
     public void randTest() throws CompilationException {
-        stmtTest("select sum(price * rand()) as price from transactions where data like '%pera%'",
-                "select sum(price * random()) as price from transactions where data like '*pera*'");
-
         stmtTest("select sum(price * random()) as price from transactions where data like '%pera%'",
                 "select sum(price * random()) as price from transactions where data like '*pera*'");
     }
@@ -143,5 +140,11 @@ public class AthenaFlairCompilerTest {
     public void showTablesLimit() throws CompilationException {
         stmtTest("show tables limit 5",
                 "SHOW TABLES");
+    }
+
+    @Test
+    public void parseDateFunction() throws CompilationException {
+        stmtTest("select datefmt(custom_field, '%y %M %d') from my_table where a = 1",
+                "select date_format(CAST(custom_field AS TIMESTAMP), '%y %M %d') from my_table where a = 1");
     }
 }
