@@ -60,4 +60,10 @@ public class OracleFlairCompilerTest {
         stmtTest("show tables like '%pera%' limit 4",
                 "SELECT table_name FROM all_tables WHERE table_name LIKE '%pera%' FETCH NEXT 4 ROWS ONLY");
     }
+
+    @Test
+    public void parseDateFunction() throws CompilationException {
+        stmtTest("select datefmt(custom_field, 'yyyy-MM-dd') from my_table where a = 1",
+                "select to_char(custom_field, 'yyyy-MM-dd') from my_table where a = 1");
+    }
 }
