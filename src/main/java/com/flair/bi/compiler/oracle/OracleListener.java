@@ -74,7 +74,13 @@ public class OracleListener extends SQLListener {
                         
 
         //func_call_expr 
-        if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("year".equalsIgnoreCase(ctx.func_call_expr().start.getText())||
+		if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
+				&& ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+			str.append("to_char(")
+					.append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(", ")
+					.append(ctx.func_call_expr().getChild(2).getChild(2).getText())
+					.append(")");
+		} else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("year".equalsIgnoreCase(ctx.func_call_expr().start.getText())||
         		"month".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "DAY".equalsIgnoreCase(ctx.func_call_expr().start.getText()) ||
         		"HOUR".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
         	str.append("EXTRACT(")       	
