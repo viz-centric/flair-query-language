@@ -96,7 +96,12 @@ ordering_term
 result_column
  : '*'
  | table_name '.' '*'
+ | aggregation_expr
  | expr ( K_AS? column_alias )?
+ ;
+
+aggregation_expr
+ : aggregation_func '(' literal ')'
  ;
 
 table_or_subquery
@@ -151,6 +156,13 @@ keyword:
    | K_CURRENT_DATE
    | K_CURRENT_TIME
    | K_CURRENT_TIMESTAMP;
+
+aggregation_func:
+   K_COUNT
+   | K_DISTINCT_COUNT
+   | K_MAX
+   | K_MIN
+   ;
 
 expr
  : literal
