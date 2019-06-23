@@ -137,4 +137,16 @@ public class KafkaFlairCompilerTest {
         stmtTest("show tables like '%pera%' limit 5",
                 "SHOW_TABLES_AND_STREAMS");
     }
+
+    @Test
+    public void parseAggregationFunction() throws CompilationException {
+        stmtTest("select column1, count(column2) from my_table where a = 1",
+                "select column1, count(column2) from my_table where a = 1");
+    }
+
+    @Test
+    public void parseDistinctCountFunction() throws CompilationException {
+        stmtTest("select column1, distinct_count(column2) from my_table where a = 1",
+                "select column1, count(distinct column2) from my_table where a = 1");
+    }
 }

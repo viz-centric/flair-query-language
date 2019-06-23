@@ -142,4 +142,16 @@ public class RedshiftFlairCompilerTest {
         stmtTest("show tables like '%pera%' limit 4",
                 "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename LIKE '%pera%' LIMIT 4");
     }
+
+    @Test
+    public void parseAggregationFunction() throws CompilationException {
+        stmtTest("select column1, count(column2) from my_table where a = 1",
+                "select column1, count(column2) from my_table where a = 1");
+    }
+
+    @Test
+    public void parseDistinctCountFunction() throws CompilationException {
+        stmtTest("select column1, distinct_count(column2) from my_table where a = 1",
+                "select column1, count(distinct column2) from my_table where a = 1");
+    }
 }

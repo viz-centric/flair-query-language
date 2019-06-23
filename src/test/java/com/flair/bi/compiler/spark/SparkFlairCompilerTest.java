@@ -138,4 +138,16 @@ public class SparkFlairCompilerTest {
         stmtTest("show tables limit 5",
                 "SHOW TABLES");
     }
+
+    @Test
+    public void parseAggregationFunction() throws CompilationException {
+        stmtTest("select column1, count(column2) from my_table where a = 1",
+                "select column1, count(column2) from my_table where a = 1");
+    }
+
+    @Test
+    public void parseDistinctCountFunction() throws CompilationException {
+        stmtTest("select column1, distinct_count(column2) from my_table where a = 1",
+                "select column1, count(distinct column2) from my_table where a = 1");
+    }
 }
