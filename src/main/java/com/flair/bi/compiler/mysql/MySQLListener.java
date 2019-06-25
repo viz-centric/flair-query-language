@@ -48,6 +48,11 @@ public class MySQLListener extends SQLListener {
         
         //func_call_expr 
         if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && ("distinct_count".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+            str.append("count(distinct ")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText())
+                    .append(")");
+        } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("date_format(CAST(")
                     .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")

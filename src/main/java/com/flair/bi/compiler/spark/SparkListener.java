@@ -18,7 +18,13 @@ public class SparkListener extends SQLListener {
         Optional<FQLParser.Binary_operatorContext> optional = Optional
                 .ofNullable(ctx.binary_operator())
                 .filter(x -> x.K_LIKE() != null);
-        if (optional.isPresent()) {
+        if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && ("distinct_count".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+            sb.append("count(distinct ")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText())
+                    .append(")");
+            property.put(ctx, sb.toString());
+        } else if (optional.isPresent()) {
             sb
                     .append(property.get(ctx.expr(0)))
                     .append(" ")
@@ -26,10 +32,9 @@ public class SparkListener extends SQLListener {
                     .append(" ")
                     .append(property.get(ctx.expr(1)).replaceAll("%", "*"));
             property.put(ctx, sb.toString());
-            return;
+        } else {
+            super.exitExpr(ctx);
         }
-
-        super.exitExpr(ctx);
     }
 
     @Override
