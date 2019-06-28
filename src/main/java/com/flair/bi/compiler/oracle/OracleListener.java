@@ -233,11 +233,12 @@ public class OracleListener extends SQLListener {
 	@Override
 	public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT table_name FROM all_tables");
+		sb.append("SELECT table_name FROM dba_tables");
 
 		if (ctx.describe_stmt_like() != null) {
-			sb.append(" WHERE table_name LIKE ")
-					.append(ctx.describe_stmt_like().expr().getText());
+			sb.append(" WHERE upper(table_name) LIKE upper(")
+					.append(ctx.describe_stmt_like().expr().getText())
+					.append(")");
 		}
 
 		if (ctx.describe_stmt_limit() != null) {

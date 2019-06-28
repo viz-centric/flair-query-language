@@ -28,19 +28,19 @@ public class OracleFlairCompilerTest {
     @Test
     public void showTables() throws CompilationException {
         stmtTest("show tables",
-                "SELECT table_name FROM all_tables");
+                "SELECT table_name FROM dba_tables");
     }
 
     @Test
     public void showTablesLike() throws CompilationException {
         stmtTest("show tables like '%pera%'",
-                "SELECT table_name FROM all_tables WHERE table_name LIKE '%pera%'");
+                "SELECT table_name FROM dba_tables WHERE upper(table_name) LIKE upper('%pera%')");
     }
 
     @Test
     public void showTablesLimit() throws CompilationException {
         stmtTest("show tables limit 4",
-                "SELECT table_name FROM all_tables FETCH NEXT 4 ROWS ONLY");
+                "SELECT table_name FROM dba_tables FETCH NEXT 4 ROWS ONLY");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class OracleFlairCompilerTest {
     @Test
     public void showTablesLikeLimit() throws CompilationException {
         stmtTest("show tables like '%pera%' limit 4",
-                "SELECT table_name FROM all_tables WHERE table_name LIKE '%pera%' FETCH NEXT 4 ROWS ONLY");
+                "SELECT table_name FROM dba_tables WHERE upper(table_name) LIKE upper('%pera%') FETCH NEXT 4 ROWS ONLY");
     }
 
     @Test
