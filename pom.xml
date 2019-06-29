@@ -55,6 +55,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+
         <repository>
             <id>dev-azure-com-vizcentric-flair-commons</id>
             <url>https://pkgs.dev.azure.com/VizCentric/_packaging/flair-commons/maven/v1</url>
