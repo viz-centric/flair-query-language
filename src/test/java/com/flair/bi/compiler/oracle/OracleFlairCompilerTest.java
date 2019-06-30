@@ -78,4 +78,10 @@ public class OracleFlairCompilerTest {
         stmtTest("select column1, distinct_count(column2) from my_table where a = 1",
                 "select column1, count(distinct column2) from my_table where a = 1");
     }
+
+    @Test
+    public void parseNowFunction() throws CompilationException {
+        stmtTest("select column1, now() from my_table where a = 1",
+                "select column1, sysdate from my_table where a = 1");
+    }
 }
