@@ -75,6 +75,9 @@ public class OracleListener extends SQLListener {
 
         //func_call_expr 
 		if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
+				&& ("now".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
+			str.append("sysdate");
+		} else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
 				&& ("distinct_count".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
 			str.append("count(distinct ")
 					.append(ctx.func_call_expr().getChild(2).getChild(0).getText())
