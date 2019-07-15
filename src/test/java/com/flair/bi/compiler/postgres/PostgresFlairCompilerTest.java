@@ -130,6 +130,12 @@ public class PostgresFlairCompilerTest {
     }
 
     @Test
+    public void selectHaving() throws CompilationException {
+        stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > 1000 LIMIT 20",
+                "SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > 1000 LIMIT 20");
+    }
+
+    @Test
     public void showTablesLike() throws CompilationException {
         stmtTest("show tables like '%pera%'",
                 "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename LIKE '%pera%'");
@@ -164,4 +170,6 @@ public class PostgresFlairCompilerTest {
         stmtTest("select column1, distinct_count(column2) from my_table where a = 1",
                 "select column1, count(distinct column2) from my_table where a = 1");
     }
+
+
 }

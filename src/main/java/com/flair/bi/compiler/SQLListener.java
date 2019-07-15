@@ -89,7 +89,8 @@ public abstract class SQLListener extends AbstractFQLListener {
                         .append(property.get(ctx.comma_sep_expr()));
 
                 if (ctx.K_HAVING() != null) {
-                    str.append(ctx.K_HAVING().getText())
+                    str.append(" ")
+                            .append(ctx.K_HAVING().getText())
                             .append(" ")
                             .append(ctx.expr().size() == 2 ? property.get(ctx.expr(1)) :
                                     property.get(ctx.expr(0)));
