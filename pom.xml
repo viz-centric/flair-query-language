@@ -90,17 +90,6 @@
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>3.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jongo</groupId>
-            <artifactId>jongo</artifactId>
-            <version>1.3.0</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
