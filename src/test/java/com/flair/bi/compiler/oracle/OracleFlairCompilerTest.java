@@ -84,4 +84,10 @@ public class OracleFlairCompilerTest {
         stmtTest("select column1, now() from my_table where a = 1",
                 "select column1, sysdate from my_table where a = 1");
     }
+
+    @Test
+    public void parseLimitAndOffset() throws CompilationException {
+        stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
+                "select column1 from my_table where a = 1 OFFSET 53 ROWS FETCH NEXT 10 ROWS ONLY");
+    }
 }
