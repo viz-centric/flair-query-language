@@ -159,4 +159,10 @@ public class AthenaFlairCompilerTest {
         stmtTest("select column1, distinct_count(column2) from my_table where a = 1",
                 "select column1, count(distinct column2) from my_table where a = 1");
     }
+
+    @Test
+    public void parseLimitAndOffset() throws CompilationException {
+        stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
+                "select column1 from my_table where a = 1 limit 10 offset 53");
+    }
 }
