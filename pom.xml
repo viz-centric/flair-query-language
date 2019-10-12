@@ -21,6 +21,7 @@
         <maven.scm.provider.gitexe>1.9.5</maven.scm.provider.gitexe>
         <maven.surefire.plugin>2.22.1</maven.surefire.plugin>
         <project.scm.id>github-credentials</project.scm.id>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
     <scm>
         <connection>
