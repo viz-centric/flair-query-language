@@ -163,6 +163,12 @@ public class AthenaFlairCompilerTest {
     @Test
     public void parseLimitAndOffset() throws CompilationException {
         stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
-                "select column1 from my_table where a = 1 limit 10 offset 53");
+                "select column1 from my_table where a = 1 offset 53 limit 10");
+    }
+
+    @Test
+    public void parseLimit() throws CompilationException {
+        stmtTest("select column1 from my_table where a = 1 limit 10",
+                "select column1 from my_table where a = 1 limit 10");
     }
 }

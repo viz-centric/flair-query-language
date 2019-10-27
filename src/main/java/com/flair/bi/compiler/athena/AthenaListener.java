@@ -45,4 +45,31 @@ public class AthenaListener extends MySQLListener {
         property.put(ctx, sb.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * <p>The default implementation does nothing.</p>
+     *
+     * @param ctx
+     */
+    @Override
+    public void exitLimit_expr(FQLParser.Limit_exprContext ctx) {
+        StringBuilder str = new StringBuilder();
+
+        if (ctx.expr().size() == 2) {
+            str
+                    .append(ctx.K_OFFSET() == null ? "," : ctx.K_OFFSET().getText())
+                    .append(" ")
+                    .append(property.get(ctx.expr(1)))
+                    .append(" ");
+        }
+
+        str
+                .append(ctx.K_LIMIT().getText())
+                .append(" ")
+                .append(property.get(ctx.expr(0)));
+
+        property.put(ctx, str.toString());
+    }
+
 }
