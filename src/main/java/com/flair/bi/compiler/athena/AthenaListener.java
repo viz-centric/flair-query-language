@@ -56,14 +56,6 @@ public class AthenaListener extends MySQLListener {
     public void exitLimit_expr(FQLParser.Limit_exprContext ctx) {
         StringBuilder str = new StringBuilder();
 
-        if (ctx.expr().size() == 2) {
-            str
-                    .append(ctx.K_OFFSET() == null ? "," : ctx.K_OFFSET().getText())
-                    .append(" ")
-                    .append(property.get(ctx.expr(1)))
-                    .append(" ");
-        }
-
         str
                 .append(ctx.K_LIMIT().getText())
                 .append(" ")
