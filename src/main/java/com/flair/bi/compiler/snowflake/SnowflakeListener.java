@@ -211,22 +211,4 @@ public class SnowflakeListener extends SQLListener {
         property.put(ctx, str.toString());
 	}
 
-    @Override
-    public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT tablename FROM pg_catalog.pg_tables");
-
-        if (ctx.describe_stmt_like() != null) {
-            sb.append(" WHERE tablename LIKE ")
-                    .append(ctx.describe_stmt_like().expr().getText());
-        }
-
-        if (ctx.describe_stmt_limit() != null) {
-            sb.append(" LIMIT ")
-                    .append(ctx.describe_stmt_limit().expr().getText());
-        }
-
-        property.put(ctx, sb.toString());
-    }
-
 }

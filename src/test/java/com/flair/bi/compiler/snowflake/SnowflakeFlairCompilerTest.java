@@ -124,12 +124,6 @@ public class SnowflakeFlairCompilerTest {
     }
 
     @Test
-    public void showTables() throws CompilationException {
-        stmtTest("show tables",
-                "SELECT tablename FROM pg_catalog.pg_tables");
-    }
-
-    @Test
     public void selectHaving() throws CompilationException {
         stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price) > 1000) LIMIT 20",
                 "SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price)>1000) LIMIT 20");
@@ -142,21 +136,27 @@ public class SnowflakeFlairCompilerTest {
     }
 
     @Test
-    public void showTablesLike() throws CompilationException {
-        stmtTest("show tables like '%pera%'",
-                "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename LIKE '%pera%'");
+    public void showTables() throws CompilationException {
+        stmtTest("show tables",
+                "SHOW TABLES");
     }
 
     @Test
-    public void showTablesLimit() throws CompilationException {
-        stmtTest("show tables limit 4",
-                "SELECT tablename FROM pg_catalog.pg_tables LIMIT 4");
+    public void showTablesLike() throws CompilationException {
+        stmtTest("show tables like '%pera%'",
+                "SHOW TABLES LIKE '%pera%'");
     }
 
     @Test
     public void showTablesLikeLimit() throws CompilationException {
-        stmtTest("show tables like '%pera%' limit 5",
-                "SELECT tablename FROM pg_catalog.pg_tables WHERE tablename LIKE '%pera%' LIMIT 5");
+        stmtTest("show tables like '%pera%' limit 4",
+                "SHOW TABLES LIKE '%pera%'");
+    }
+
+    @Test
+    public void showTablesLimit() throws CompilationException {
+        stmtTest("show tables limit 5",
+                "SHOW TABLES");
     }
 
     @Test
