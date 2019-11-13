@@ -5,6 +5,7 @@ import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class MySQLListener extends SQLListener {
@@ -58,6 +59,15 @@ public class MySQLListener extends SQLListener {
                     .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
                     .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
                     .append(")");
+        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            String dataType = ctx.func_call_expr().getChild(2).getChild(0).getText();
+            if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
+                String fieldName = ctx.func_call_expr().getChild(2).getChild(2).getText();
+                str.append("parse_datetime(")
+                        .append(fieldName)
+                        .append(",'yyyy-MM-dd''T''HH:mm:ss.SSS''Z')");
+            }
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
         	str.append("EXTRACT(")       	
         	.append("YEAR_MONTH")
