@@ -1,6 +1,7 @@
 package com.flair.bi.compiler.mysql;
 
 import com.flair.bi.compiler.SQLListener;
+import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -60,14 +61,8 @@ public class MySQLListener extends SQLListener {
                     .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
                     .append(")");
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
-                && "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-            String dataType = ctx.func_call_expr().getChild(2).getChild(0).getText();
-            if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
-                String fieldName = ctx.func_call_expr().getChild(2).getChild(2).getText();
-                str.append("parse_datetime(")
-                        .append(fieldName)
-                        .append(",'yyyy-MM-dd''T''HH:mm:ss.SSS''Z')");
-            }
+                && "__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(onFlairFunction(ctx.func_call_expr()));
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
         	str.append("EXTRACT(")       	
         	.append("YEAR_MONTH")
@@ -202,5 +197,21 @@ public class MySQLListener extends SQLListener {
         property.put(ctx, str.toString());
         
 	}
+
+    protected String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+        StringBuilder str = new StringBuilder();
+        String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
+            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
+            str.append("parse_datetime(")
+                    .append(fieldName)
+                    .append(",")
+                    .append("'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'")
+                    .append(")");
+        } else {
+            str.append(func_call_expr.getText());
+        }
+        return str.toString();
+    }
 
 }
