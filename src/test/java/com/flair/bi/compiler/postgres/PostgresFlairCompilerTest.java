@@ -183,5 +183,9 @@ public class PostgresFlairCompilerTest {
                 "select column1 from my_table where a = 1 limit 10 offset 53");
     }
 
-
+    @Test
+    public void parseFlairTypeCast() throws CompilationException {
+        stmtTest("SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR(timestamp, '2019-11-03T22:00:00.000Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+                "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= to_timestamp('2019-11-03T22:00:00.000Z','YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+    }
 }

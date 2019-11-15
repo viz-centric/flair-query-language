@@ -203,10 +203,10 @@ public class MySQLListener extends SQLListener {
         String dataType = func_call_expr.getChild(2).getChild(0).getText();
         if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
             String fieldName = func_call_expr.getChild(2).getChild(2).getText();
-            str.append("parse_datetime(")
+            str.append("STR_TO_DATE(")
                     .append(fieldName)
                     .append(",")
-                    .append("'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'")
+                    .append("'%Y-%m-%dT%H:%i:%s.%fZ'")
                     .append(")");
         } else {
             str.append(func_call_expr.getText());
