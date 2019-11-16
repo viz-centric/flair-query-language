@@ -6,6 +6,7 @@ import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class PostgresListener extends SQLListener {
@@ -94,6 +95,9 @@ public class PostgresListener extends SQLListener {
                 str.append(ctx.func_call_expr().getChild(2).getText());
             }
             str.append("::timestamp)");
+        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(onFlairFunction(ctx.func_call_expr()));
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())
                 || "YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("to_char(");
@@ -210,6 +214,22 @@ public class PostgresListener extends SQLListener {
 
         property.put(ctx, str.toString());
 	}
+
+    protected String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+        StringBuilder str = new StringBuilder();
+        String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
+            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
+            str.append("to_timestamp(")
+                    .append(fieldName)
+                    .append(",")
+                    .append("'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'")
+                    .append(")");
+        } else {
+            str.append(func_call_expr.getText());
+        }
+        return str.toString();
+    }
 
     @Override
     public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
