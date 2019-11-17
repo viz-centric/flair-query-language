@@ -9,6 +9,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.io.Writer;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
+
 public class OracleListener extends SQLListener {
     public OracleListener(Writer writer) {
         super(writer);
@@ -82,7 +84,10 @@ public class OracleListener extends SQLListener {
 			str.append("count(distinct ")
 					.append(ctx.func_call_expr().getChild(2).getChild(0).getText())
 					.append(")");
-		} else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
+		} else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(onFlairFunction(ctx.func_call_expr()));
+        } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
 				&& ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
 			str.append("to_char(")
 					.append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(", ")
@@ -233,7 +238,23 @@ public class OracleListener extends SQLListener {
         property.put(ctx, str.toString());
 	}
 
-	@Override
+    protected String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+        StringBuilder str = new StringBuilder();
+        String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
+            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
+            str.append("to_timestamp(")
+                    .append(fieldName)
+                    .append(",")
+                    .append("'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"'")
+                    .append(")");
+        } else {
+            str.append(func_call_expr.getText());
+        }
+        return str.toString();
+    }
+
+    @Override
 	public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT table_name FROM dba_tables");
