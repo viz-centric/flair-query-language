@@ -160,4 +160,10 @@ public class CockroachdbFlairCompilerTest {
         stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
                 "select column1 from my_table where a = 1 limit 10 offset 53");
     }
+
+    @Test
+    public void parseFlairIntervalOperation() throws CompilationException {
+        stmtTest("SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+                "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (NOW() - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+    }
 }

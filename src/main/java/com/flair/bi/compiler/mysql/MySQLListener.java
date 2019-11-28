@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class MySQLListener extends SQLListener {
@@ -61,16 +62,20 @@ public class MySQLListener extends SQLListener {
                     .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
                     .append(")");
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
-                && "__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+                && "__FLAIR_INTERVAL_OPERATION".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(onFlairIntervalOperationFunction(ctx.func_call_expr()));
+        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && ("__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())
+                    || "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append(onFlairFunction(ctx.func_call_expr()));
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-        	str.append("EXTRACT(")       	
+        	str.append("EXTRACT(")
         	.append("YEAR_MONTH")
         	.append(" FROM ");
         	if(ctx.func_call_expr().getChild(2).getText().contains(",")) {
         		str.append("STR_TO_DATE( ")
         		.append(ctx.func_call_expr().getChild(2).getText()+")");
-        		
+
         	}
         	else {
         	str.append(ctx.func_call_expr().getChild(2).getText());
@@ -78,11 +83,11 @@ public class MySQLListener extends SQLListener {
         	str.append(")");
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-        	str.append("CONCAT(YEAR(");       	
+        	str.append("CONCAT(YEAR(");
         	if(ctx.func_call_expr().getChild(2).getText().contains(",")) {
         		str.append("STR_TO_DATE( ")
         		.append(ctx.func_call_expr().getChild(2).getText()+")");
-        		
+
         	}
         	else {
         	str.append(ctx.func_call_expr().getChild(2).getText());
@@ -91,7 +96,7 @@ public class MySQLListener extends SQLListener {
         	if(ctx.func_call_expr().getChild(2).getText().contains(",")) {
         		str.append("STR_TO_DATE( ")
         		.append(ctx.func_call_expr().getChild(2).getText()+")");
-        		
+
         	}
         	else {
         	str.append(ctx.func_call_expr().getChild(2).getText());
@@ -212,6 +217,28 @@ public class MySQLListener extends SQLListener {
             str.append(func_call_expr.getText());
         }
         return str.toString();
+    }
+
+    @Override
+    protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
+        return "(" +
+                expression +
+                " " +
+                operator +
+                " " + "interval " + number + " " + hourOrDays +
+                ")";
+    }
+
+    @Override
+    protected String getHourOrDaysFromLetter(String letter) {
+        if (Objects.equals(letter, "hours")) {
+            return "hour";
+        } else if (Objects.equals(letter, "days")) {
+            return "day";
+        } else if (Objects.equals(letter, "months")) {
+            return "month";
+        }
+        return letter;
     }
 
 }
