@@ -1,6 +1,7 @@
 package com.flair.bi.compiler.snowflake;
 
 import com.flair.bi.compiler.SQLListener;
+import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -73,6 +74,9 @@ public class SnowflakeListener extends SQLListener {
             str.append("count(distinct ")
                     .append(ctx.func_call_expr().getChild(2).getChild(0).getText())
                     .append(")");
+        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "__FLAIR_INTERVAL_OPERATION".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(onFlairIntervalOperationFunction(ctx.func_call_expr()));
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("to_char(")
@@ -211,4 +215,24 @@ public class SnowflakeListener extends SQLListener {
         property.put(ctx, str.toString());
 	}
 
+
+    @Override
+    protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
+        if ("NOW()".equals(expression)) {
+            expression = "CURRENT_TIMESTAMP()";
+        }
+        return "DATEADD(" +
+                hourOrDays +
+                ", " +
+                operator +
+                number +
+                ", " +
+                expression +
+                ")";
+    }
+
+    @Override
+    protected String getHourOrDaysFromLetter(String letter) {
+        return SqlTimeConverter.toSingular(letter);
+    }
 }

@@ -126,7 +126,7 @@ public class AthenaFlairCompilerTest {
 
     @Test
     public void parseFlairTypeCast() throws CompilationException {
-        stmtTest("SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR(timestamp, '2019-11-03T22:00:00.000Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+        stmtTest("SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
                 "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= parse_datetime('2019-11-03T22:00:00.000Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20");
     }
 
@@ -176,5 +176,11 @@ public class AthenaFlairCompilerTest {
     public void parseLimit() throws CompilationException {
         stmtTest("select column1 from my_table where a = 1 limit 10",
                 "select column1 from my_table where a = 1 limit 10");
+    }
+
+    @Test
+    public void parseFlairIntervalOperation() throws CompilationException {
+        stmtTest("SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+                "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (NOW() - interval '4' hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20");
     }
 }

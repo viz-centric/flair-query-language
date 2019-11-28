@@ -85,7 +85,8 @@ public class OracleListener extends SQLListener {
 					.append(ctx.func_call_expr().getChild(2).getChild(0).getText())
 					.append(")");
 		} else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
-                && "__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+				&& ("__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())
+				|| "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append(onFlairFunction(ctx.func_call_expr()));
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
 				&& ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {

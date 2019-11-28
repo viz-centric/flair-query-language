@@ -80,4 +80,15 @@ public class AthenaListener extends MySQLListener {
         }
         return str.toString();
     }
+
+    @Override
+    protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
+        return "(" +
+                expression +
+                " " +
+                operator +
+                " " + "interval '" + number + "' " + hourOrDays +
+                ")";
+    }
+
 }

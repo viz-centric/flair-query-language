@@ -1,5 +1,6 @@
 package com.flair.bi.compiler;
 
+import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.Value_exprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -909,6 +910,36 @@ public abstract class SQLListener extends AbstractFQLListener {
         }
 
         property.put(ctx, sb.toString());
+    }
+
+    protected String onFlairIntervalOperationFunction(FQLParser.Func_call_exprContext func_call_expr) {
+        String firstArgument = func_call_expr.comma_sep_expr().expr(0).getText();
+        String operator = func_call_expr.comma_sep_expr().expr(1).literal().STRING_LITERAL().getSymbol().getText();
+        String secondArgument = func_call_expr.comma_sep_expr().expr(2).getText();
+        String rawOperator = getRawStringValue(operator);
+        String rawSecondArgument = getRawStringValue(secondArgument);
+        String letter = rawSecondArgument.split(" ")[1];
+        String hourOrDays = getHourOrDaysFromLetter(letter);
+        String number = rawSecondArgument.split(" ")[0];
+
+        return composeFlairInterval(firstArgument, rawOperator, hourOrDays, number);
+    }
+
+    protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
+        return "(" +
+                expression +
+                " " +
+                operator +
+                " " + "interval '" + number + " " + hourOrDays + "'" +
+                ")";
+    }
+
+    protected String getRawStringValue(String operator) {
+        return operator.substring(1, operator.length() - 1);
+    }
+
+    protected String getHourOrDaysFromLetter(String letter) {
+        return SqlTimeConverter.toPlural(letter);
     }
 
 }
