@@ -1,13 +1,13 @@
 package com.flair.bi.compiler.mysql;
 
 import com.flair.bi.compiler.SQLListener;
+import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 
 public class MySQLListener extends SQLListener {
@@ -231,14 +231,7 @@ public class MySQLListener extends SQLListener {
 
     @Override
     protected String getHourOrDaysFromLetter(String letter) {
-        if (Objects.equals(letter, "hours")) {
-            return "hour";
-        } else if (Objects.equals(letter, "days")) {
-            return "day";
-        } else if (Objects.equals(letter, "months")) {
-            return "month";
-        }
-        return letter;
+        return SqlTimeConverter.toSingular(letter);
     }
 
 }

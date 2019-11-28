@@ -1,5 +1,6 @@
 package com.flair.bi.compiler;
 
+import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.Value_exprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -938,7 +939,7 @@ public abstract class SQLListener extends AbstractFQLListener {
     }
 
     protected String getHourOrDaysFromLetter(String letter) {
-        return letter;
+        return SqlTimeConverter.toPlural(letter);
     }
 
 }
