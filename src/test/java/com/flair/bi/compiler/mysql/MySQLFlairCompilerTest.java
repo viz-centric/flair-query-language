@@ -176,4 +176,12 @@ public class MySQLFlairCompilerTest {
         stmtTest("SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
                 "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (NOW() - interval 4 hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
     }
+
+    @Test
+    public void parseHaving() throws CompilationException {
+        stmtTest("SELECT order_date as order_date, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE order_date >= __FLAIR_INTERVAL_OPERATION(NOW(), '-', '6 hours') GROUP BY order_date HAVING COUNT(order_item_quantity) = 1 ORDER BY order_item_quantity DESC,order_date DESC LIMIT 20 OFFSET 0",
+                "SELECT order_date as order_date, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE order_date >= (NOW() - interval 6 hour) GROUP BY order_date HAVING COUNT(order_item_quantity) = 1 ORDER BY order_item_quantity DESC,order_date DESC LIMIT 20 OFFSET 0");
+    }
+
+
 }
