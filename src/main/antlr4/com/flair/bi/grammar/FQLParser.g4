@@ -183,6 +183,13 @@ expr
 // | raise_function
  ;
 
+//where_in_expr:
+//    ( '(' ( select_stmt
+//            | comma_sep_expr
+//            )?
+//       ')'
+//     | ( database_name '.' )? table_name );
+
 comma_sep_expr:
     expr ( ',' expr )*;
 str_match_expr:

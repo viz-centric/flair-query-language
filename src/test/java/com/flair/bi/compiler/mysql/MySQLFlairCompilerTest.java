@@ -183,5 +183,9 @@ public class MySQLFlairCompilerTest {
                 "SELECT order_date as order_date, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE order_date >= (NOW() - interval 6 hour) GROUP BY order_date HAVING COUNT(order_item_quantity) = 1 ORDER BY order_item_quantity DESC,order_date DESC LIMIT 20 OFFSET 0");
     }
 
-
+    @Test
+    public void parseWhereIn() throws CompilationException {
+        stmtTest("SELECT customer_city as customer_city,COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0",
+                "SELECT customer_city as customer_city, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0");
+    }
 }

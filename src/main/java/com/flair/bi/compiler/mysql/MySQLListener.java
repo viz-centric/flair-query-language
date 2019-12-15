@@ -18,7 +18,7 @@ public class MySQLListener extends SQLListener {
     @Override
 	public void exitExpr(ExprContext ctx) {
 		  StringBuilder str = new StringBuilder();
-		  
+
 		 //literal
         Optional.ofNullable(ctx.literal())
                 .map(property::get)
@@ -48,8 +48,17 @@ public class MySQLListener extends SQLListener {
                         .append(x)
                         .append(" ")
                         .append(property.get(ctx.expr(1))));
-        
-        //func_call_expr 
+
+//        if (ctx.binary_operator() != null) {
+//            str
+//                    .append(ctx.expr(0).getText())
+//                    .append(" ")
+//                    .append(ctx.binary_operator().getText())
+//                    .append(" ")
+//                    .append(ctx.expr(1).getText());
+//        }
+
+        //func_call_expr
         if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("distinct_count".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("count(distinct ")
