@@ -128,6 +128,11 @@ public abstract class SQLListener extends AbstractFQLListener {
         
     }
 
+    @Override
+    public void exitError(FQLParser.ErrorContext ctx) {
+        property.put(ctx, ctx.getText());
+    }
+
     /**
      * {@inheritDoc}
      * <p>
@@ -155,6 +160,16 @@ public abstract class SQLListener extends AbstractFQLListener {
 
         property.put(ctx, str.toString());
 
+    }
+
+    @Override
+    public void exitDescribe_stmt_like(FQLParser.Describe_stmt_likeContext ctx) {
+        property.put(ctx, ctx.getText());
+    }
+
+    @Override
+    public void exitDescribe_stmt_limit(FQLParser.Describe_stmt_limitContext ctx) {
+        property.put(ctx, ctx.getText());
     }
 
     /**
@@ -452,6 +467,11 @@ public abstract class SQLListener extends AbstractFQLListener {
 
 
         property.put(ctx, str.toString());
+    }
+
+    @Override
+    public void exitJoin_clause(FQLParser.Join_clauseContext ctx) {
+        property.put(ctx, ctx.getText());
     }
 
     /**
@@ -853,6 +873,16 @@ public abstract class SQLListener extends AbstractFQLListener {
      */
     @Override
     public void exitLiteral(FQLParser.LiteralContext ctx) {
+        property.put(ctx, ctx.getText());
+    }
+
+    @Override
+    public void exitJoin_constraint(FQLParser.Join_constraintContext ctx) {
+        property.put(ctx, ctx.getText());
+    }
+
+    @Override
+    public void exitJoin_operator(FQLParser.Join_operatorContext ctx) {
         property.put(ctx, ctx.getText());
     }
 

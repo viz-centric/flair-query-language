@@ -156,4 +156,10 @@ public class SparkFlairCompilerTest {
         stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
                 "select column1 from my_table where a = 1 limit 10 offset 53");
     }
+
+    @Test
+    public void parseWhereIn() throws CompilationException {
+        stmtTest("SELECT customer_city as customer_city,COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0",
+                "SELECT customer_city as customer_city, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0");
+    }
 }
