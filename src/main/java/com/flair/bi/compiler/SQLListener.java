@@ -547,7 +547,7 @@ public abstract class SQLListener extends AbstractFQLListener {
                             .append(ctx.K_NOT() == null ? "" : ctx.K_NOT().getText() + " ")
                             .append(x).append(" ");
 
-                    String tableName = property.get(ctx.table_name());
+                    String tableName = property.get(ctx.where_in_expr().table_name());
 
                     if (tableName == null) {
                         str.append("(");
@@ -555,14 +555,14 @@ public abstract class SQLListener extends AbstractFQLListener {
                                 .map(property::get)
                                 .ifPresent(str::append);
 
-                        Optional.ofNullable(ctx.comma_sep_expr())
+                        Optional.ofNullable(ctx.where_in_expr().comma_sep_expr())
                                 .map(property::get)
                                 .ifPresent(str::append);
 
                         str.append(")");
 
                     } else {
-                        Optional.ofNullable(ctx.database_name())
+                        Optional.ofNullable(ctx.where_in_expr().database_name())
                                 .map(property::get)
                                 .ifPresent(y ->
                                         str.append(y)
@@ -613,6 +613,11 @@ public abstract class SQLListener extends AbstractFQLListener {
 
         property.put(ctx, str.toString());
         
+    }
+
+    @Override
+    public void exitWhere_in_expr(FQLParser.Where_in_exprContext ctx) {
+        property.put(ctx, ctx.getText());
     }
 
     /**

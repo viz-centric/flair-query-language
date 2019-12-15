@@ -173,22 +173,18 @@ expr
  | expr null_check_op
 // | expr K_IS K_NOT? expr
  | expr K_NOT? K_BETWEEN expr K_AND expr
- | expr K_NOT? K_IN ( '(' ( select_stmt
-                            | comma_sep_expr
-                            )?
-                        ')'
-                      | ( database_name '.' )? table_name )
+ | expr K_NOT? K_IN where_in_expr
  | ( ( K_NOT )? K_EXISTS )? '(' select_stmt ')'
 // | K_CASE expr? ( K_WHEN expr K_THEN expr )+ ( K_ELSE expr )? K_END
 // | raise_function
  ;
 
-//where_in_expr:
-//    ( '(' ( select_stmt
-//            | comma_sep_expr
-//            )?
-//       ')'
-//     | ( database_name '.' )? table_name );
+where_in_expr:
+    ( '(' ( select_stmt
+            | comma_sep_expr
+            )?
+       ')'
+     | ( database_name '.' )? table_name );
 
 comma_sep_expr:
     expr ( ',' expr )*;
