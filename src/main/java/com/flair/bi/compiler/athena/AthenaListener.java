@@ -5,33 +5,11 @@ import com.flair.bi.grammar.FQLParser;
 
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.Optional;
 
 public class AthenaListener extends MySQLListener {
 
     public AthenaListener(Writer writer) {
         super(writer);
-    }
-
-    @Override
-    public void exitExpr(FQLParser.ExprContext ctx) {
-        StringBuilder sb = new StringBuilder();
-
-        Optional<FQLParser.Binary_operatorContext> optional = Optional
-                .ofNullable(ctx.binary_operator())
-                .filter(x -> x.K_LIKE() != null);
-        if (optional.isPresent()) {
-            sb
-                    .append(property.get(ctx.expr(0)))
-                    .append(" ")
-                    .append(optional.get().getText())
-                    .append(" ")
-                    .append(property.get(ctx.expr(1)).replaceAll("%", "*"));
-            property.put(ctx, sb.toString());
-            return;
-        }
-
-        super.exitExpr(ctx);
     }
 
     @Override
@@ -79,7 +57,7 @@ public class AthenaListener extends MySQLListener {
         } else {
             str.append("CAST(")
                     .append(fieldName)
-                    .append(" as CHAR)");
+                    .append(" as VARCHAR)");
         }
         return str.toString();
     }

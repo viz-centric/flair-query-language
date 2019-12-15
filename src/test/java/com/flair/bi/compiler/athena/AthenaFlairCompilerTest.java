@@ -103,7 +103,7 @@ public class AthenaFlairCompilerTest {
     @Test
     public void likeExpressionPercentTurnsToStar() throws CompilationException {
         stmtTest("select * from transactions where data like '%pera%'",
-                "select * from transactions where data like '*pera*'");
+                "select * from transactions where data like '%pera%'");
     }
 
     @Test
@@ -115,7 +115,7 @@ public class AthenaFlairCompilerTest {
     @Test
     public void randTest() throws CompilationException {
         stmtTest("select sum(price * random()) as price from transactions where data like '%pera%'",
-                "select sum(price * random()) as price from transactions where data like '*pera*'");
+                "select sum(price * random()) as price from transactions where data like '%pera%'");
     }
 
     @Test
@@ -133,7 +133,7 @@ public class AthenaFlairCompilerTest {
     @Test
     public void parseFlairTypeCastLike() throws CompilationException {
         stmtTest("SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(__FLAIR_CAST(bigint, product_id)) LIKE UPPER('%123%') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-                "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(CAST(product_id as CHAR)) LIKE UPPER('*123*') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20");
+                "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(CAST(product_id as VARCHAR)) LIKE UPPER('%123%') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20");
     }
 
     @Test
