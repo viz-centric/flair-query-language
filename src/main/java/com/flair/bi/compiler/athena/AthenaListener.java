@@ -65,18 +65,21 @@ public class AthenaListener extends MySQLListener {
         property.put(ctx, str.toString());
     }
 
-    protected String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+    @Override
+    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
         StringBuilder str = new StringBuilder();
         String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        String fieldName = func_call_expr.getChild(2).getChild(2).getText();
         if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
-            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
             str.append("parse_datetime(")
                     .append(fieldName)
                     .append(",")
                     .append("'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'")
                     .append(")");
         } else {
-            str.append(func_call_expr.getText());
+            str.append("CAST(")
+                    .append(fieldName)
+                    .append(" as CHAR)");
         }
         return str.toString();
     }

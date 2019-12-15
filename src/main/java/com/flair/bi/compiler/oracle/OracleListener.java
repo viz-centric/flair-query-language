@@ -87,7 +87,7 @@ public class OracleListener extends SQLListener {
 		} else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
 				&& ("__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())
 				|| "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
-            str.append(onFlairFunction(ctx.func_call_expr()));
+            str.append(onFlairCastFunction(ctx.func_call_expr()));
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
 				&& ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
 			str.append("to_char(")
@@ -239,18 +239,20 @@ public class OracleListener extends SQLListener {
         property.put(ctx, str.toString());
 	}
 
-    protected String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
         StringBuilder str = new StringBuilder();
         String dataType = func_call_expr.getChild(2).getChild(0).getText();
-        if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
-            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
+		String fieldName = func_call_expr.getChild(2).getChild(2).getText();
+		if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
             str.append("to_timestamp(")
                     .append(fieldName)
                     .append(",")
                     .append("'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"'")
                     .append(")");
         } else {
-            str.append(func_call_expr.getText());
+			str.append("CAST(")
+					.append(fieldName)
+					.append(" as CHAR)");
         }
         return str.toString();
     }
