@@ -67,7 +67,7 @@ public class MySQLListener extends SQLListener {
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())
                     || "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
-            str.append(onFlairFunction(ctx.func_call_expr()));
+            str.append(onFlairCastFunction(ctx.func_call_expr()));
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
         	str.append("EXTRACT(")
         	.append("YEAR_MONTH")
@@ -203,18 +203,20 @@ public class MySQLListener extends SQLListener {
         
 	}
 
-    protected String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
         StringBuilder str = new StringBuilder();
         String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        String fieldName = func_call_expr.getChild(2).getChild(2).getText();
         if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
-            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
             str.append("STR_TO_DATE(")
                     .append(fieldName)
                     .append(",")
                     .append("'%Y-%m-%dT%H:%i:%s.%fZ'")
                     .append(")");
         } else {
-            str.append(func_call_expr.getText());
+            str.append("CAST(")
+                    .append(fieldName)
+                    .append(" as CHAR)");
         }
         return str.toString();
     }

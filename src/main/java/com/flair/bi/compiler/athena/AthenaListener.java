@@ -5,33 +5,11 @@ import com.flair.bi.grammar.FQLParser;
 
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.Optional;
 
 public class AthenaListener extends MySQLListener {
 
     public AthenaListener(Writer writer) {
         super(writer);
-    }
-
-    @Override
-    public void exitExpr(FQLParser.ExprContext ctx) {
-        StringBuilder sb = new StringBuilder();
-
-        Optional<FQLParser.Binary_operatorContext> optional = Optional
-                .ofNullable(ctx.binary_operator())
-                .filter(x -> x.K_LIKE() != null);
-        if (optional.isPresent()) {
-            sb
-                    .append(property.get(ctx.expr(0)))
-                    .append(" ")
-                    .append(optional.get().getText())
-                    .append(" ")
-                    .append(property.get(ctx.expr(1)).replaceAll("%", "*"));
-            property.put(ctx, sb.toString());
-            return;
-        }
-
-        super.exitExpr(ctx);
     }
 
     @Override
@@ -65,18 +43,21 @@ public class AthenaListener extends MySQLListener {
         property.put(ctx, str.toString());
     }
 
-    protected String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+    @Override
+    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
         StringBuilder str = new StringBuilder();
         String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        String fieldName = func_call_expr.getChild(2).getChild(2).getText();
         if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
-            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
             str.append("parse_datetime(")
                     .append(fieldName)
                     .append(",")
                     .append("'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'")
                     .append(")");
         } else {
-            str.append(func_call_expr.getText());
+            str.append("CAST(")
+                    .append(fieldName)
+                    .append(" as VARCHAR)");
         }
         return str.toString();
     }

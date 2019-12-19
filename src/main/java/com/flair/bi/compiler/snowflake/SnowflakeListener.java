@@ -82,7 +82,7 @@ public class SnowflakeListener extends SQLListener {
         } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())
                 || "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
-            str.append(onFlairFunction(ctx.func_call_expr()));
+            str.append(onFlairCastFunction(ctx.func_call_expr()));
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("to_char(")
@@ -221,18 +221,20 @@ public class SnowflakeListener extends SQLListener {
         property.put(ctx, str.toString());
 	}
 
-    private String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
+    private String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
         StringBuilder str = new StringBuilder();
         String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        String fieldName = func_call_expr.getChild(2).getChild(2).getText();
         if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
-            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
             str.append("to_timestamp(")
                     .append(fieldName)
                     .append(",")
                     .append("'YYYY-MM-DDTHH24:MI:SS.FF3Z'")
                     .append(")");
         } else {
-            str.append(func_call_expr.getText());
+            str.append("CAST(")
+                    .append(fieldName)
+                    .append(" as TEXT)");
         }
         return str.toString();
     }

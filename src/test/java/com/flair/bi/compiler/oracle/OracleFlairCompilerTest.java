@@ -90,4 +90,10 @@ public class OracleFlairCompilerTest {
         stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
                 "select column1 from my_table where a = 1 OFFSET 53 ROWS FETCH NEXT 10 ROWS ONLY");
     }
+
+    @Test
+    public void parseFlairTypeCastLike() throws CompilationException {
+        stmtTest("SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(__FLAIR_CAST(bigint, product_id)) LIKE UPPER('%123%') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC",
+                "SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(CAST(product_id as CHAR)) LIKE UPPER('%123%') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC");
+    }
 }
