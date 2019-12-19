@@ -236,6 +236,10 @@ public class OracleListener extends SQLListener {
                 .map(property::get)
                 .ifPresent(str::append);
 
+		if (str.length() == 0) {
+			str.append(ctx.getText());
+		}
+
         property.put(ctx, str.toString());
 	}
 
