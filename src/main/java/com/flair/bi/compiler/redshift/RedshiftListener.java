@@ -2,9 +2,9 @@ package com.flair.bi.compiler.redshift;
 
 import com.flair.bi.compiler.postgres.PostgresListener;
 import com.flair.bi.compiler.utils.SqlTimeConverter;
+import com.flair.bi.grammar.FQLParser;
 
 import java.io.Writer;
-import java.util.Arrays;
 
 public class RedshiftListener extends PostgresListener {
 	public RedshiftListener(Writer writer) {
@@ -12,10 +12,12 @@ public class RedshiftListener extends PostgresListener {
 	}
 
 	@Override
+	protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
+		return "GETDATE(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
+	}
+
+	@Override
 	protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
-		if (Arrays.asList("NOW()", "__FLAIR_NOW()").contains(expression.toUpperCase())) {
-			expression = "GETDATE()";
-		}
 		return "DATEADD(" +
 				hourOrDays +
 				", " +

@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -667,22 +666,24 @@ public abstract class SQLListener extends AbstractFQLListener {
      */
     @Override
     public void exitFunc_call_expr(FQLParser.Func_call_exprContext ctx) {
-        StringBuilder str = new StringBuilder();
-
         Optional<String> funcName = getFunctionName(ctx);
         if (funcName.isPresent()) {
-            Optional<Object> result = Optional.empty();
+            Optional<String> result = Optional.empty();
             if ("__FLAIR_CAST".equalsIgnoreCase(funcName.get())) {
                 result = Optional.ofNullable(onFlairCastFunction(ctx));
             } else if ("__FLAIR_INTERVAL_OPERATION".equalsIgnoreCase(funcName.get())) {
                 result = Optional.ofNullable(onFlairIntervalOperationFunction(ctx));
+            } else if ("__FLAIR_NOW".equalsIgnoreCase(funcName.get())
+                || "NOW".equalsIgnoreCase(funcName.get())) {
+                result = Optional.ofNullable(onFlairNowFunction(ctx));
             }
             if (result.isPresent()) {
-                str.append(result.get());
-                property.put(ctx, str.toString());
+                property.put(ctx, result.get());
                 return;
             }
         }
+
+        StringBuilder str = new StringBuilder();
 
         str.append(property.get(ctx.function_name()))
                 .append("(");
@@ -698,6 +699,10 @@ public abstract class SQLListener extends AbstractFQLListener {
         str.append(")");
 
         property.put(ctx, str.toString());
+    }
+
+    protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
+        return "NOW(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
     }
 
     private Optional<String> getFunctionName(FQLParser.Func_call_exprContext ctx) {
@@ -1003,9 +1008,6 @@ public abstract class SQLListener extends AbstractFQLListener {
     }
 
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
-        if (Arrays.asList("__FLAIR_NOW()").contains(expression.toUpperCase())) {
-            expression = "NOW()";
-        }
         return "(" +
                 expression +
                 " " +
