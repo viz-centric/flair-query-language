@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1002,6 +1003,9 @@ public abstract class SQLListener extends AbstractFQLListener {
     }
 
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
+        if (Arrays.asList("__FLAIR_NOW()").contains(expression.toUpperCase())) {
+            expression = "NOW()";
+        }
         return "(" +
                 expression +
                 " " +

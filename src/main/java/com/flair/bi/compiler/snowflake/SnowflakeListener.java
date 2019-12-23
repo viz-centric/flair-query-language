@@ -7,6 +7,7 @@ import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class SnowflakeListener extends SQLListener {
@@ -218,7 +219,7 @@ public class SnowflakeListener extends SQLListener {
 
     @Override
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
-        if ("NOW()".equals(expression)) {
+        if (Arrays.asList("NOW()", "__FLAIR_NOW()").contains(expression.toUpperCase())) {
             expression = "CURRENT_TIMESTAMP()";
         }
         return "DATEADD(" +

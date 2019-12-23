@@ -221,6 +221,9 @@ public class MySQLListener extends SQLListener {
 
     @Override
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
+        if (Arrays.asList("__FLAIR_NOW()").contains(expression.toUpperCase())) {
+            expression = "NOW()";
+        }
         return "(" +
                 expression +
                 " " +
