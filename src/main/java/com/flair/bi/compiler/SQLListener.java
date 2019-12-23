@@ -3,6 +3,7 @@ package com.flair.bi.compiler;
 import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.Value_exprContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 public abstract class SQLListener extends AbstractFQLListener {
 
@@ -663,6 +666,23 @@ public abstract class SQLListener extends AbstractFQLListener {
      */
     @Override
     public void exitFunc_call_expr(FQLParser.Func_call_exprContext ctx) {
+        Optional<String> funcName = getFunctionName(ctx);
+        if (funcName.isPresent()) {
+            Optional<String> result = Optional.empty();
+            if ("__FLAIR_CAST".equalsIgnoreCase(funcName.get())) {
+                result = Optional.ofNullable(onFlairCastFunction(ctx));
+            } else if ("__FLAIR_INTERVAL_OPERATION".equalsIgnoreCase(funcName.get())) {
+                result = Optional.ofNullable(onFlairIntervalOperationFunction(ctx));
+            } else if ("__FLAIR_NOW".equalsIgnoreCase(funcName.get())
+                || "NOW".equalsIgnoreCase(funcName.get())) {
+                result = Optional.ofNullable(onFlairNowFunction(ctx));
+            }
+            if (result.isPresent()) {
+                property.put(ctx, result.get());
+                return;
+            }
+        }
+
         StringBuilder str = new StringBuilder();
 
         str.append(property.get(ctx.function_name()))
@@ -679,7 +699,20 @@ public abstract class SQLListener extends AbstractFQLListener {
         str.append(")");
 
         property.put(ctx, str.toString());
-        
+    }
+
+    protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
+        return "NOW(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
+    }
+
+    private Optional<String> getFunctionName(FQLParser.Func_call_exprContext ctx) {
+        if (ctx.function_name() != null
+                && ctx.function_name().any_name() != null
+                && ctx.function_name().any_name().IDENTIFIER() != null
+                && ctx.function_name().any_name().IDENTIFIER().getSymbol() != null) {
+            return Optional.ofNullable(ctx.function_name().any_name().IDENTIFIER().getSymbol().getText());
+        }
+        return Optional.empty();
     }
 
     /**
@@ -942,8 +975,27 @@ public abstract class SQLListener extends AbstractFQLListener {
         property.put(ctx, sb.toString());
     }
 
+    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
+        StringBuilder str = new StringBuilder();
+        String dataType = func_call_expr.getChild(2).getChild(0).getText();
+        ParseTree fieldName = func_call_expr.getChild(2).getChild(2);
+        if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
+            str.append("to_timestamp(")
+                    .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
+                    .append(",")
+                    .append("'YYYY-MM-DDTHH24:MI:SS.FF3Z'")
+                    .append(")");
+        } else {
+            str.append("CAST(")
+                    .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
+                    .append(" as TEXT)");
+        }
+        return str.toString();
+    }
+
     protected String onFlairIntervalOperationFunction(FQLParser.Func_call_exprContext func_call_expr) {
-        String firstArgument = func_call_expr.comma_sep_expr().expr(0).getText();
+        FQLParser.ExprContext firstArgument = func_call_expr.comma_sep_expr().expr(0);
+        String firstArgumentText = property.get(firstArgument) != null ? property.get(firstArgument) : firstArgument.getText();
         String operator = func_call_expr.comma_sep_expr().expr(1).literal().STRING_LITERAL().getSymbol().getText();
         String secondArgument = func_call_expr.comma_sep_expr().expr(2).getText();
         String rawOperator = getRawStringValue(operator);
@@ -952,7 +1004,7 @@ public abstract class SQLListener extends AbstractFQLListener {
         String hourOrDays = getHourOrDaysFromLetter(letter);
         String number = rawSecondArgument.split(" ")[0];
 
-        return composeFlairInterval(firstArgument, rawOperator, hourOrDays, number);
+        return composeFlairInterval(firstArgumentText, rawOperator, hourOrDays, number);
     }
 
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
