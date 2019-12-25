@@ -43,4 +43,14 @@ public abstract class AbstractCompilerUnitTest<T extends FlairCompiler> {
 		stmtTest("select * from transactions; drop table transactions");
 	}
 
+	@Test(expected = CompilationException.class)
+	public void updateTableStatementShouldFail() throws CompilationException {
+		stmtTest("UPDATE table_name SET column1 = value1, column2 = value2");
+	}
+
+	@Test(expected = CompilationException.class)
+	public void deleteStatementShouldFail() throws CompilationException {
+		stmtTest("DELETE FROM table_name WHERE condition;");
+	}
+
 }
