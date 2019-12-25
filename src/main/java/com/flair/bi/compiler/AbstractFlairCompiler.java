@@ -18,39 +18,43 @@ import java.io.Writer;
  */
 public abstract class AbstractFlairCompiler implements FlairCompiler {
 
-    private FQLParserListener listener;
+	private FQLParserListener listener;
 
-    /**
-     * Compiles input to write to to the writer
-     *
-     * @param query  input used for compiling
-     * @param writer writer that receives the result of compilation
-     * @throws CompilationException if compilation fails
-     */
-    @Override
-    public void compile(FlairQuery query, Writer writer) throws CompilationException {
-        try {
-            ANTLRInputStream input = new ANTLRInputStream(query.getStatement());
-            FQLLexer lexer = new FQLLexer(input);
+	/**
+	 * Compiles input to write to to the writer
+	 *
+	 * @param query  input used for compiling
+	 * @param writer writer that receives the result of compilation
+	 * @throws CompilationException if compilation fails
+	 */
+	@Override
+	public void compile(FlairQuery query, Writer writer) throws CompilationException {
+		try {
+			final ANTLRInputStream input = new ANTLRInputStream(query.getStatement());
+			final FQLLexer lexer = new FQLLexer(input);
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(new ThrowingErrorListener());
 
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
+			final CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-            FQLParser parser = new FQLParser(tokens);
+			final FQLParser parser = new FQLParser(tokens);
+			parser.removeErrorListeners();
+			parser.addErrorListener(new ThrowingErrorListener());
 
-            ParseTree tree = parser.parse(); // begin parsing at init rule
-            // Create a generic parse tree walker that can trigger callbacks
-            ParseTreeWalker walker = new ParseTreeWalker();
-            // Walk the tree created during the parse, trigger callbacks
-            listener = getListener(writer);
-            walker.walk(listener, tree);
-        } catch (Exception e) {
-            throw new CompilationException(e);
-        }
-    }
+			final ParseTree tree = parser.parse(); // begin parsing at init rule
+			// Create a generic parse tree walker that can trigger callbacks
+			final ParseTreeWalker walker = new ParseTreeWalker();
+			// Walk the tree created during the parse, trigger callbacks
+			listener = getListener(writer);
+			walker.walk(listener, tree);
+		} catch (Exception e) {
+			throw new CompilationException(e);
+		}
+	}
 
-    public FQLParserListener getListener() {
-        return listener;
-    }
+	public FQLParserListener getListener() {
+		return listener;
+	}
 
-    protected abstract FQLParserListener getListener(Writer writer);
+	protected abstract FQLParserListener getListener(Writer writer);
 }
