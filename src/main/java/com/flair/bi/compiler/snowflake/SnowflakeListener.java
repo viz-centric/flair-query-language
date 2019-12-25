@@ -9,8 +9,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.io.Writer;
 import java.util.Optional;
 
-import static java.util.Arrays.asList;
-
 public class SnowflakeListener extends SQLListener {
     public SnowflakeListener(Writer writer) {
         super(writer);
@@ -76,13 +74,6 @@ public class SnowflakeListener extends SQLListener {
             str.append("count(distinct ")
                     .append(ctx.func_call_expr().getChild(2).getChild(0).getText())
                     .append(")");
-        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
-                && "__FLAIR_INTERVAL_OPERATION".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-            str.append(onFlairIntervalOperationFunction(ctx.func_call_expr()));
-        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
-                && ("__FLAIR".equalsIgnoreCase(ctx.func_call_expr().start.getText())
-                || "__FLAIR_CAST".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
-            str.append(onFlairFunction(ctx.func_call_expr()));
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("to_char(")
@@ -218,31 +209,20 @@ public class SnowflakeListener extends SQLListener {
                 .map(property::get)
                 .ifPresent(str::append);
 
+        if (str.length() == 0) {
+            str.append(ctx.getText());
+        }
+
         property.put(ctx, str.toString());
 	}
 
-    private String onFlairFunction(FQLParser.Func_call_exprContext func_call_expr) {
-        StringBuilder str = new StringBuilder();
-        String dataType = func_call_expr.getChild(2).getChild(0).getText();
-        if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
-            String fieldName = func_call_expr.getChild(2).getChild(2).getText();
-            str.append("to_timestamp(")
-                    .append(fieldName)
-                    .append(",")
-                    .append("'YYYY-MM-DDTHH24:MI:SS.FF3Z'")
-                    .append(")");
-        } else {
-            str.append(func_call_expr.getText());
-        }
-        return str.toString();
+    @Override
+    protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
+        return "CURRENT_TIMESTAMP(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
     }
-
 
     @Override
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
-        if ("NOW()".equals(expression)) {
-            expression = "CURRENT_TIMESTAMP()";
-        }
         return "DATEADD(" +
                 hourOrDays +
                 ", " +

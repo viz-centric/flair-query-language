@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.project.bi</groupId>
     <artifactId>flair-query-language</artifactId>
-    <version>1.6.8-SNAPSHOT</version>
+    <version>1.6.10-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <antlr4.version>4.5</antlr4.version>
         <maven-compiler.version>3.7.0</maven-compiler.version>
-        <bi-common.version>1.3.28</bi-common.version>
+        <bi-common.version>1.3.29</bi-common.version>
         <builder-helper.version>1.8</builder-helper.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.16.0</mockito.version>

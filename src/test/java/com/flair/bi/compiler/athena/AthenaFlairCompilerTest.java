@@ -91,7 +91,7 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 	@Test
 	public void likeExpressionPercentTurnsToStar() throws CompilationException {
 		stmtTest("select * from transactions where data like '%pera%'",
-				"select * from transactions where data like '*pera*'");
+				"select * from transactions where data like '%pera%'");
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 	@Test
 	public void randTest() throws CompilationException {
 		stmtTest("select sum(price * random()) as price from transactions where data like '%pera%'",
-				"select sum(price * random()) as price from transactions where data like '*pera*'");
+				"select sum(price * random()) as price from transactions where data like '%pera%'");
 	}
 
 	@Test
