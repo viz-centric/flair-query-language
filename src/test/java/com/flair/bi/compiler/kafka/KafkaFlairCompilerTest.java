@@ -4,11 +4,23 @@ import com.flair.bi.compiler.AbstractCompilerUnitTest;
 import com.project.bi.exceptions.CompilationException;
 import org.junit.Test;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairCompiler> {
+
+	public static final DateTimeFormatter ISO_LOCAL_DATE_TIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+	private Instant now;
+	private Clock clock;
 
 	@Override
 	protected KafkaFlairCompiler configureCompiler() {
-		return new KafkaFlairCompiler();
+		now = Instant.now();
+		clock = Clock.fixed(now, ZoneId.systemDefault());
+		return new KafkaFlairCompiler(clock);
 	}
 
 	@Test
@@ -23,22 +35,26 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 
 	@Test
 	public void testSelectStmtGroupByOrderBy1() throws CompilationException {
-		stmtTest("Select data, sum(price) as price from transactions group by data order by price asc");
+		stmtTest("Select data, sum(price) as price from transactions group by data order by price asc",
+				"Select data, sum(price) as price from transactions group by data ");
 	}
 
 	@Test
 	public void testSelectStmtGroupByOrderBy2() throws CompilationException {
-		stmtTest("Select data, sum(price) as price from transactions group by data order by price desc");
+		stmtTest("Select data, sum(price) as price from transactions group by data order by price desc",
+				"Select data, sum(price) as price from transactions group by data ");
 	}
 
 	@Test
 	public void testSelectStmtOrderBy1() throws CompilationException {
-		stmtTest("Select data, sum(price) as price from transactions order by price asc");
+		stmtTest("Select data, sum(price) as price from transactions order by price asc",
+				"Select data, sum(price) as price from transactions ");
 	}
 
 	@Test
 	public void testSelectStmtOrderBy2() throws CompilationException {
-		stmtTest("Select data, sum(price) as price from transactions order by price desc");
+		stmtTest("Select data, sum(price) as price from transactions order by price desc",
+				"Select data, sum(price) as price from transactions ");
 	}
 
 	@Test
@@ -48,8 +64,8 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 
 	@Test
 	public void multipleTestCaseComplex() throws CompilationException {
-		stmtTest(
-				"select * from transactions group by data order by price asc;select data where price between 10 and 200");
+		stmtTest("select * from transactions group by data order by price asc;select data where price between 10 and 200",
+				"select * from transactions group by data ;select data where price between 10 and 200");
 	}
 
 	@Test
@@ -136,42 +152,48 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 	@Test
 	public void parseLimitAndOffset() throws CompilationException {
 		stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
-				"select column1 from my_table where a = 1 limit 10 offset 53");
+				"select column1 from my_table where a = 1 limit 10");
 	}
 
 	@Test
 	public void parseWhereIn() throws CompilationException {
 		stmtTest(
 				"SELECT customer_city as customer_city,COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0",
-				"SELECT customer_city as customer_city, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0");
+				"SELECT customer_city as customer_city, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city  LIMIT 20");
 	}
 
 	@Test
 	public void parseFlairTypeCast() throws CompilationException {
 		stmtTest(
 				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') GROUP BY updated_on  LIMIT 20");
 	}
 
 	@Test
 	public void parseFlairTypeCastLike() throws CompilationException {
 		stmtTest(
 				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(__FLAIR_CAST(bigint, product_id)) LIKE UPPER('%123%') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UCASE(CAST(product_id as VARCHAR)) LIKE UCASE('%123%') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UCASE(CAST(product_id as VARCHAR)) LIKE UCASE('%123%') GROUP BY updated_on  LIMIT 20");
 	}
 
 	@Test
 	public void parseFlairIntervalOperation() throws CompilationException {
+		LocalDateTime now = LocalDateTime.now(clock);
+		String formatted = now.format(ISO_LOCAL_DATE_TIME);
+		int fourHours = 4 * 60 * 60 * 1000;
 		stmtTest(
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN current_time() AND (current_time() - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AND (STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') - " + fourHours + ") GROUP BY updated_on  LIMIT 20");
 	}
 
 	@Test
 	public void parseFlairIntervalAndCastOperation() throws CompilationException {
+		LocalDateTime now = LocalDateTime.now(clock);
+		String formatted = now.format(ISO_LOCAL_DATE_TIME);
+		int fourHours = 4 * 60 * 60 * 1000;
 		stmtTest(
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN current_time() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03T22:00:00.000Z'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN current_time() AND (STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN __FLAIR_NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03T22:00:00.000Z'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AND (STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') - " + fourHours + ") GROUP BY updated_on  LIMIT 20");
 	}
 
 }
