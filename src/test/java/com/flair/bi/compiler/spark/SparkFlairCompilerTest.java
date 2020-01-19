@@ -1,9 +1,8 @@
 package com.flair.bi.compiler.spark;
 
-import org.junit.Test;
-
 import com.flair.bi.compiler.AbstractSqlCompilerUnitTest;
 import com.project.bi.exceptions.CompilationException;
+import org.junit.Test;
 
 public class SparkFlairCompilerTest extends AbstractSqlCompilerUnitTest<SparkFlairCompiler> {
 
@@ -139,6 +138,34 @@ public class SparkFlairCompilerTest extends AbstractSqlCompilerUnitTest<SparkFla
 	public void parseLimitAndOffset() throws CompilationException {
 		stmtTest("select column1 from my_table where a = 1 limit 10 offset 53",
 				"select column1 from my_table where a = 1 limit 10 offset 53");
+	}
+
+	@Test
+	public void parseFlairTypeCast() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= to_timestamp('2019-11-03T22:00:00.000Z','YYYY-MM-DDTHH24:MI:SS.FF3Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+	}
+
+	@Test
+	public void parseFlairTypeCastLike() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(__FLAIR_CAST(bigint, product_id)) LIKE UPPER('%123%') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE UPPER(CAST(product_id as TEXT)) LIKE UPPER('*123*') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+	}
+
+	@Test
+	public void parseFlairIntervalOperation() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN CURRENT_TIMESTAMP() AND DATEADD(hour, -4, CURRENT_TIMESTAMP()) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+	}
+
+	@Test
+	public void parseFlairIntervalAndCastOperation() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN CURRENT_TIMESTAMP() AND DATEADD(hour, -4, to_timestamp('2019-11-03T22:00:00.000Z','YYYY-MM-DDTHH24:MI:SS.FF3Z')) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test
