@@ -196,4 +196,9 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AND (STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') - " + fourHours + ") GROUP BY updated_on  LIMIT 20");
 	}
 
+	@Test
+	public void parseDistinct() throws CompilationException {
+		stmtTest("SELECT DISTINCT * FROM PAGEVIEWS_ORIGINAL LIMIT 10 OFFSET 0",
+				"SELECT * FROM PAGEVIEWS_ORIGINAL LIMIT 10");
+	}
 }

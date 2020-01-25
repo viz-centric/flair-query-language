@@ -22,7 +22,7 @@ public abstract class SQLListener extends AbstractFQLListener {
         SELECT_COLUMNS
     }
 
-	private Map<ParseResult, List<String>> parseResults = new ConcurrentHashMap<>();
+	protected final Map<ParseResult, List<String>> parseResults = new ConcurrentHashMap<>();
 
 	public SQLListener(Writer writer) {
         super(writer);
