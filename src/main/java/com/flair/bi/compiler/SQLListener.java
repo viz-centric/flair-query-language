@@ -22,7 +22,7 @@ public abstract class SQLListener extends AbstractFQLListener {
         SELECT_COLUMNS
     }
 
-	private Map<ParseResult, List<String>> parseResults = new ConcurrentHashMap<>();
+	protected final Map<ParseResult, List<String>> parseResults = new ConcurrentHashMap<>();
 
 	public SQLListener(Writer writer) {
         super(writer);
@@ -705,7 +705,7 @@ public abstract class SQLListener extends AbstractFQLListener {
         return "NOW(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
     }
 
-    private Optional<String> getFunctionName(FQLParser.Func_call_exprContext ctx) {
+    protected Optional<String> getFunctionName(FQLParser.Func_call_exprContext ctx) {
         if (ctx.function_name() != null
                 && ctx.function_name().any_name() != null
                 && ctx.function_name().any_name().IDENTIFIER() != null
