@@ -1,6 +1,7 @@
 package com.flair.bi.compiler.oracle;
 
 import com.flair.bi.compiler.SQLListener;
+import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import com.flair.bi.grammar.FQLParser.Function_nameContext;
@@ -286,5 +287,10 @@ public class OracleListener extends SQLListener {
 				operator +
 				" " + "interval '" + number + "' " + hourOrDays +
 				")";
+	}
+
+	@Override
+	protected String getHourOrDaysFromLetter(String letter) {
+		return SqlTimeConverter.toSingular(letter);
 	}
 }
