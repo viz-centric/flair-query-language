@@ -277,4 +277,14 @@ public class OracleListener extends SQLListener {
 
 		property.put(ctx, sb.toString());
 	}
+
+	@Override
+	protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
+		return "(" +
+				expression +
+				" " +
+				operator +
+				" " + "interval '" + number + "' " + hourOrDays +
+				")";
+	}
 }
