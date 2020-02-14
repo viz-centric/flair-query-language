@@ -1,9 +1,8 @@
 package com.flair.bi.compiler.cockroachdb;
 
-import org.junit.Test;
-
 import com.flair.bi.compiler.AbstractCompilerUnitTest;
 import com.project.bi.exceptions.CompilationException;
+import org.junit.Test;
 
 public class CockroachdbFlairCompilerTest extends AbstractCompilerUnitTest<CockroachdbFlairCompiler> {
 
@@ -160,7 +159,7 @@ public class CockroachdbFlairCompilerTest extends AbstractCompilerUnitTest<Cockr
 	public void parseFlairIntervalAndCastOperation() throws CompilationException {
 		stmtTest(
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03T22:00:00.000Z'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (to_timestamp('2019-11-03T22:00:00.000Z','YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (timestamptz '2019-11-03T22:00:00.000Z' - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test

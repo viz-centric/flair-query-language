@@ -1,9 +1,8 @@
 package com.flair.bi.compiler.oracle;
 
-import org.junit.Test;
-
 import com.flair.bi.compiler.AbstractSqlCompilerUnitTest;
 import com.project.bi.exceptions.CompilationException;
+import org.junit.Test;
 
 public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleFlairCompiler> {
 
@@ -85,14 +84,14 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 	public void parseFlairIntervalOperation() throws CompilationException {
 		stmtTest(
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN sysdate AND (sysdate - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC OFFSET 0 ROWS FETCH NEXT 20 ROWS ONLY");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN sysdate AND (sysdate - interval '4' hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC OFFSET 0 ROWS FETCH NEXT 20 ROWS ONLY");
 	}
 
 	@Test
 	public void parseFlairIntervalAndCastOperation() throws CompilationException {
 		stmtTest(
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03T22:00:00.000Z'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN sysdate AND (to_timestamp('2019-11-03T22:00:00.000Z','YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"') - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC OFFSET 0 ROWS FETCH NEXT 20 ROWS ONLY");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN sysdate AND (to_timestamp('2019-11-03T22:00:00.000Z','YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"') - interval '4' hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC OFFSET 0 ROWS FETCH NEXT 20 ROWS ONLY");
 	}
 
 	@Test
