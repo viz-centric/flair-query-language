@@ -519,13 +519,6 @@ public abstract class SQLListener extends AbstractFQLListener {
         Optional.ofNullable(ctx.func_call_expr())
                 .map(property::get)
                 .ifPresent(str::append);
-
-        // '(' expr ')'
-        if ("(".equalsIgnoreCase(ctx.start.getText())) {
-            str.append("(")
-                    .append(property.get(ctx.expr(0)))
-                    .append(")");
-        }
         
 //        expr K_NOT? K_BETWEEN expr K_AND expr
         Optional.ofNullable(ctx.K_BETWEEN())
@@ -613,6 +606,14 @@ public abstract class SQLListener extends AbstractFQLListener {
         Optional.ofNullable(ctx.db_tbl_col_expr())
                 .map(property::get)
                 .ifPresent(str::append);
+
+        Optional.ofNullable(ctx.expr_in_brackets())
+                .map(item -> property.get(item.expr()))
+                .ifPresent(expr_in_brackets ->
+                        str.append("(")
+                                .append(expr_in_brackets)
+                                .append(")")
+                );
 
         property.put(ctx, str.toString());
         

@@ -1,9 +1,8 @@
 package com.flair.bi.compiler.postgres;
 
-import org.junit.Test;
-
 import com.flair.bi.compiler.AbstractCompilerUnitTest;
 import com.project.bi.exceptions.CompilationException;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link PostgresFlairCompiler}
@@ -204,6 +203,20 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 		stmtTest(
 				"SELECT customer_city as customer_city,COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0",
 				"SELECT customer_city as customer_city, COUNT(order_item_quantity) as order_item_quantity FROM ecommerce WHERE product_id IN (1073) GROUP BY customer_city ORDER BY order_item_quantity DESC,customer_city DESC LIMIT 20 OFFSET 0");
+	}
+
+	@Test
+	public void parseWhereInLongExpression() throws CompilationException {
+		stmtTest(
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (to_timestamp('2019-11-03T22:00:00.000Z','YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'),1231) GROUP BY customer_city");
+	}
+
+	@Test
+	public void parseWhereInOneCondition() throws CompilationException {
+		stmtTest(
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (to_timestamp(121,'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"')) GROUP BY customer_city");
 	}
 
 }
