@@ -192,6 +192,14 @@ public class MySQLListener extends SQLListener {
                 .map(property::get)
                 .ifPresent(str::append);
 
+        Optional.ofNullable(ctx.expr_in_brackets())
+                .map(item -> property.get(item.expr()))
+                .ifPresent(expr_in_brackets ->
+                        str.append("(")
+                                .append(expr_in_brackets)
+                                .append(")")
+                );
+
         if (str.length() == 0) {
             str.append(ctx.getText());
         }

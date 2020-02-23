@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PostgresListener extends SQLListener {
     public PostgresListener(Writer writer) {
@@ -138,7 +139,9 @@ public class PostgresListener extends SQLListener {
         //                      ')'
         //        | ( database_name '.' )? table_name )
         Optional.ofNullable(ctx.K_IN())
-                .map(TerminalNode::getText)
+                .map(terminalNode -> {
+                    return terminalNode.getText();
+                })
                 .ifPresent(x -> {
                     str.append(property.get(ctx.expr(0)))
                             .append(" ")
@@ -209,6 +212,14 @@ public class PostgresListener extends SQLListener {
                 .map(property::get)
                 .ifPresent(str::append);
 
+        Optional.ofNullable(ctx.expr_in_brackets())
+                .map(item -> property.get(item.expr()))
+                .ifPresent(expr_in_brackets -> {
+                    str.append("(")
+                        .append(expr_in_brackets)
+                        .append(")");
+                });
+
         if (str.length() == 0) {
             str.append(ctx.getText());
         }
@@ -216,7 +227,17 @@ public class PostgresListener extends SQLListener {
         property.put(ctx, str.toString());
 	}
 
-	@Override
+    @Override
+    public void exitComma_sep_expr(FQLParser.Comma_sep_exprContext ctx) {
+        String collect = ctx.expr().stream().map(node -> {
+            String s = property.get(node);
+            return s;
+        })
+                .collect(Collectors.joining(","));
+        property.put(ctx, collect);
+    }
+
+    @Override
     protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
         StringBuilder str = new StringBuilder();
         String dataType = func_call_expr.getChild(2).getChild(0).getText();

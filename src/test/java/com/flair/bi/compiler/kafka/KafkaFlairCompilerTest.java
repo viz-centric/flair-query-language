@@ -201,4 +201,18 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 		stmtTest("SELECT DISTINCT * FROM PAGEVIEWS_ORIGINAL LIMIT 10 OFFSET 0",
 				"SELECT * FROM PAGEVIEWS_ORIGINAL LIMIT 10");
 	}
+
+	@Test
+	public void parseWhereInLongExpression() throws CompilationException {
+		stmtTest(
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''),1231) GROUP BY customer_city");
+	}
+
+	@Test
+	public void parseWhereInOneCondition() throws CompilationException {
+		stmtTest(
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STRINGTOTIMESTAMP(121,'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''')) GROUP BY customer_city");
+	}
 }

@@ -1,9 +1,8 @@
 package com.flair.bi.compiler.athena;
 
-import org.junit.Test;
-
 import com.flair.bi.compiler.AbstractSqlCompilerUnitTest;
 import com.project.bi.exceptions.CompilationException;
+import org.junit.Test;
 
 public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaFlairCompiler> {
 
@@ -170,4 +169,17 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (NOW() - interval '4' hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20");
 	}
 
+	@Test
+	public void parseWhereInLongExpression() throws CompilationException {
+		stmtTest(
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (parse_datetime('2019-11-03T22:00:00.000Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z'),1231) GROUP BY customer_city");
+	}
+
+	@Test
+	public void parseWhereInOneCondition() throws CompilationException {
+		stmtTest(
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (parse_datetime(121,'yyyy-MM-dd''T''HH:mm:ss.SSS''Z')) GROUP BY customer_city");
+	}
 }

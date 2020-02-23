@@ -166,7 +166,7 @@ expr
 // | expr K_AND expr
 // | expr K_OR expr
  | func_call_expr
- | '(' expr ')'
+ | expr_in_brackets
 // | K_CAST '(' expr K_AS type_name ')'
 // | expr K_COLLATE collation_name
  | expr K_NOT? str_match_expr expr ( K_ESCAPE expr )?
@@ -182,6 +182,10 @@ expr
 // | K_CASE expr? ( K_WHEN expr K_THEN expr )+ ( K_ELSE expr )? K_END
 // | raise_function
  ;
+
+expr_in_brackets:
+   '(' expr ')'
+   ;
 
 comma_sep_expr:
     expr ( ',' expr )*;
