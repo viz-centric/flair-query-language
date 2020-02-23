@@ -20,10 +20,16 @@ public class CockroachdbListener extends PostgresListener {
 		if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
 			str.append("timestamptz ")
 					.append(fieldName);
-		} else {
+		} else if ("flair_string".equalsIgnoreCase(dataType)) {
 			str.append("CAST(")
 					.append(fieldName)
 					.append(" as TEXT)");
+		} else {
+			str.append("CAST(")
+					.append(fieldName)
+					.append(" as ")
+					.append(dataType)
+					.append(")");
 		}
 		return str.toString();
 	}

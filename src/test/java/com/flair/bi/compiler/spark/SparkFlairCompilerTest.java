@@ -161,4 +161,10 @@ public class SparkFlairCompilerTest extends AbstractSqlCompilerUnitTest<SparkFla
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (to_timestamp(121,'YYYY-MM-DDTHH24:MI:SS.FF3Z')) GROUP BY customer_city");
 	}
 
+	@Test
+	public void parseFlairCast() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(bigint, product_id)",
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as bigint)");
+	}
 }

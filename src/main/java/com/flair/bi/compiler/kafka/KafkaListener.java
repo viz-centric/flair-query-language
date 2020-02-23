@@ -61,10 +61,16 @@ public class KafkaListener extends PostgresListener {
 					.append(",")
 					.append("'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''")
 					.append(")");
-		} else {
+		} else if ("flair_string".equalsIgnoreCase(dataType)) {
 			str.append("CAST(")
 					.append(fieldName)
 					.append(" as VARCHAR)");
+		} else {
+			str.append("CAST(")
+					.append(fieldName)
+					.append(" as ")
+					.append(dataType)
+					.append(")");
 		}
 		return str.toString();
 	}

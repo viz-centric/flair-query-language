@@ -259,11 +259,17 @@ public class OracleListener extends SQLListener {
                     .append(",")
                     .append("'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"'")
                     .append(")");
-        } else {
+		} else if ("flair_string".equalsIgnoreCase(dataType)) {
 			str.append("CAST(")
 					.append(fieldName)
 					.append(" as CHAR)");
-        }
+		} else {
+			str.append("CAST(")
+					.append(fieldName)
+					.append(" as ")
+					.append(dataType)
+					.append(")");
+		}
         return str.toString();
     }
 
