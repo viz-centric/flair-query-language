@@ -219,10 +219,16 @@ public class MySQLListener extends SQLListener {
                     .append(",")
                     .append("'%Y-%m-%dT%H:%i:%s.%fZ'")
                     .append(")");
-        } else {
+        } else if ("flair_string".equalsIgnoreCase(dataType)) {
             str.append("CAST(")
                     .append(fieldName)
                     .append(" as CHAR)");
+        } else {
+            str.append("CAST(")
+                    .append(fieldName)
+                    .append(" as ")
+                    .append(dataType)
+                    .append(")");
         }
         return str.toString();
     }

@@ -986,10 +986,16 @@ public abstract class SQLListener extends AbstractFQLListener {
                     .append(",")
                     .append("'YYYY-MM-DDTHH24:MI:SS.FF3Z'")
                     .append(")");
-        } else {
+        } else if ("flair_string".equalsIgnoreCase(dataType)) {
             str.append("CAST(")
                     .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
                     .append(" as TEXT)");
+        } else {
+            str.append("CAST(")
+                    .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
+                    .append(" as ")
+                    .append(dataType)
+                    .append(")");
         }
         return str.toString();
     }
