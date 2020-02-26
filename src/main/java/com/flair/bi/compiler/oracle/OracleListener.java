@@ -257,7 +257,7 @@ public class OracleListener extends SQLListener {
             str.append("to_timestamp(")
                     .append(fieldName)
                     .append(",")
-                    .append("'YYYY-MM-DD\"T\"HH24:MI:SS.ff3\"Z\"'")
+                    .append("'YYYY-MM-DD HH24:MI:SS'")
                     .append(")");
 		} else if ("flair_string".equalsIgnoreCase(dataType)) {
 			str.append("CAST(")

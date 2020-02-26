@@ -59,7 +59,7 @@ public class KafkaListener extends PostgresListener {
 			str.append("STRINGTOTIMESTAMP(")
 					.append(fieldName)
 					.append(",")
-					.append("'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''")
+					.append("'yyyy-MM-dd HH:mm:ss'")
 					.append(")");
 		} else if ("flair_string".equalsIgnoreCase(dataType)) {
 			str.append("CAST(")

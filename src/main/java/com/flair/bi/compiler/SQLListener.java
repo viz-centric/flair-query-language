@@ -984,7 +984,7 @@ public abstract class SQLListener extends AbstractFQLListener {
             str.append("to_timestamp(")
                     .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
                     .append(",")
-                    .append("'YYYY-MM-DDTHH24:MI:SS.FF3Z'")
+                    .append("'YYYY-MM-DD HH24:MI:SS'")
                     .append(")");
         } else if ("flair_string".equalsIgnoreCase(dataType)) {
             str.append("CAST(")
