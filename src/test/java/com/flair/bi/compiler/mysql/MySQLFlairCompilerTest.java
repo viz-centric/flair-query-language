@@ -140,8 +140,8 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void parseFlairTypeCast() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STR_TO_DATE('2019-11-03T22:00:00.000Z','%Y-%m-%dT%H:%i:%s.%fZ') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STR_TO_DATE('2019-11-03 22:00:00','%Y-%m-%d H:%i:%s') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test
@@ -173,8 +173,8 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void parseFlairIntervalAndCastOperation() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (STR_TO_DATE('2019-11-03T22:00:00.000Z','%Y-%m-%dT%H:%i:%s.%fZ') - interval 4 hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (STR_TO_DATE('2019-11-03 22:00:00','%Y-%m-%d H:%i:%s') - interval 4 hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test
@@ -194,15 +194,15 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void parseWhereInLongExpression() throws CompilationException {
 		stmtTest(
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03T22:00:00.000Z'), 1231) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE('2019-11-03T22:00:00.000Z','%Y-%m-%dT%H:%i:%s.%fZ'),1231) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE('2019-11-03 22:00:00','%Y-%m-%d H:%i:%s'),1231) GROUP BY customer_city");
 	}
 
 	@Test
 	public void parseWhereInOneCondition() throws CompilationException {
 		stmtTest(
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE(121,'%Y-%m-%dT%H:%i:%s.%fZ')) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE(121,'%Y-%m-%d H:%i:%s')) GROUP BY customer_city");
 	}
 
 	@Test

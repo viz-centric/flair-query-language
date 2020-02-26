@@ -217,7 +217,7 @@ public class MySQLListener extends SQLListener {
             str.append("STR_TO_DATE(")
                     .append(fieldName)
                     .append(",")
-                    .append("'%Y-%m-%dT%H:%i:%s.%fZ'")
+                    .append("'%Y-%m-%d H:%i:%s'")
                     .append(")");
         } else if ("flair_string".equalsIgnoreCase(dataType)) {
             str.append("CAST(")

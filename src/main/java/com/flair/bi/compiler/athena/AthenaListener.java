@@ -52,7 +52,7 @@ public class AthenaListener extends MySQLListener {
             str.append("parse_datetime(")
                     .append(fieldName)
                     .append(",")
-                    .append("'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'")
+                    .append("'yyyy-MM-dd HH:mm:ss'")
                     .append(")");
         } else if ("flair_string".equalsIgnoreCase(dataType)) {
             str.append("CAST(")
