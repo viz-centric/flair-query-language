@@ -121,4 +121,11 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(bigint, product_id)",
 				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as bigint)");
 	}
+
+	@Test
+	public void parseFlairCastToVarchar() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(varchar2, product_id)",
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as varchar2(10))");
+	}
 }
