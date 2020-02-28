@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-
 public abstract class SQLListener extends AbstractFQLListener {
+
+    protected final Map<String, Function<FlairCastData, CharSequence>> CAST_MAP = new ConcurrentHashMap<>();
 
     public enum ParseResult {
         SELECT_COLUMNS
@@ -26,6 +27,32 @@ public abstract class SQLListener extends AbstractFQLListener {
 
 	public SQLListener(Writer writer) {
         super(writer);
+
+        CAST_MAP.put("timestamp",
+                (field1) -> new StringBuilder()
+                        .append("to_timestamp(")
+                        .append(field1.getFieldName())
+                        .append(",")
+                        .append("'YYYY-MM-DD HH24:MI:SS'")
+                        .append(")"));
+        CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
+        CAST_MAP.put("date", CAST_MAP.get("timestamp"));
+
+        CAST_MAP.put("flair_string",
+                (field) -> new StringBuilder()
+                        .append("CAST(")
+                        .append(field.getFieldName())
+                        .append(" as TEXT)")
+        );
+
+        CAST_MAP.put("__other",
+                (field) -> new StringBuilder()
+                        .append("CAST(")
+                        .append(field.getFieldName())
+                        .append(" as ")
+                        .append(field.getDataType())
+                        .append(")")
+        );
     }
 
 	public List<String> getParseResults(ParseResult parseResult) {
@@ -977,27 +1004,21 @@ public abstract class SQLListener extends AbstractFQLListener {
     }
 
     protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
-        StringBuilder str = new StringBuilder();
+
         String dataType = func_call_expr.getChild(2).getChild(0).getText();
         ParseTree fieldName = func_call_expr.getChild(2).getChild(2);
-        if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
-            str.append("to_timestamp(")
-                    .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
-                    .append(",")
-                    .append("'YYYY-MM-DD HH24:MI:SS'")
-                    .append(")");
-        } else if ("flair_string".equalsIgnoreCase(dataType)) {
-            str.append("CAST(")
-                    .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
-                    .append(" as TEXT)");
-        } else {
-            str.append("CAST(")
-                    .append(property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText())
-                    .append(" as ")
-                    .append(dataType)
-                    .append(")");
-        }
-        return str.toString();
+        String finalFieldName = property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText();
+
+        FlairCastData flairCastData = new FlairCastData();
+        flairCastData.setDataType(dataType);
+        flairCastData.setFieldName(finalFieldName);
+
+        Function<FlairCastData, CharSequence> func = CAST_MAP.getOrDefault(
+                dataType.toLowerCase(),
+                CAST_MAP.get("__other")
+        );
+
+        return func.apply(flairCastData).toString();
     }
 
     protected String onFlairIntervalOperationFunction(FQLParser.Func_call_exprContext func_call_expr) {

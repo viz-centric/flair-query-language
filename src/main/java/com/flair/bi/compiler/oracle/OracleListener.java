@@ -10,11 +10,16 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.io.Writer;
 import java.util.Optional;
 
-import static java.util.Arrays.asList;
-
 public class OracleListener extends SQLListener {
     public OracleListener(Writer writer) {
         super(writer);
+
+		CAST_MAP.put("flair_string",
+				(field) -> new StringBuilder()
+						.append("CAST(")
+						.append(field.getFieldName())
+						.append(" as CHAR)")
+		);
     }
 
 	@Override
@@ -247,31 +252,6 @@ public class OracleListener extends SQLListener {
 
         property.put(ctx, str.toString());
 	}
-
-	@Override
-    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
-        StringBuilder str = new StringBuilder();
-        String dataType = func_call_expr.getChild(2).getChild(0).getText();
-		String fieldName = func_call_expr.getChild(2).getChild(2).getText();
-		if (asList("timestamp", "datetime", "date").contains(dataType.toLowerCase())) {
-            str.append("to_timestamp(")
-                    .append(fieldName)
-                    .append(",")
-                    .append("'YYYY-MM-DD HH24:MI:SS'")
-                    .append(")");
-		} else if ("flair_string".equalsIgnoreCase(dataType)) {
-			str.append("CAST(")
-					.append(fieldName)
-					.append(" as CHAR)");
-		} else {
-			str.append("CAST(")
-					.append(fieldName)
-					.append(" as ")
-					.append(dataType)
-					.append(")");
-		}
-        return str.toString();
-    }
 
     @Override
 	public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
