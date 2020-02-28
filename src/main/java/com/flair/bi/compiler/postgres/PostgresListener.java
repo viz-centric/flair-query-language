@@ -6,13 +6,22 @@ import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PostgresListener extends SQLListener {
     public PostgresListener(Writer writer) {
         super(writer);
+
+        CAST_MAP.put("timestamp",
+                (field1) -> new StringBuilder()
+                        .append("to_timestamp(")
+                        .append(field1.getFieldName())
+                        .append(",")
+                        .append("'YYYY-MM-DD HH24:MI:SS'")
+                        .append(")"));
+        CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
+        CAST_MAP.put("date", CAST_MAP.get("timestamp"));
     }
 
     /**
@@ -235,31 +244,6 @@ public class PostgresListener extends SQLListener {
         })
                 .collect(Collectors.joining(","));
         property.put(ctx, collect);
-    }
-
-    @Override
-    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
-        StringBuilder str = new StringBuilder();
-        String dataType = func_call_expr.getChild(2).getChild(0).getText();
-        String fieldName = func_call_expr.getChild(2).getChild(2).getText();
-        if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
-            str.append("to_timestamp(")
-                    .append(fieldName)
-                    .append(",")
-                    .append("'YYYY-MM-DD HH24:MI:SS'")
-                    .append(")");
-        } else if ("flair_string".equalsIgnoreCase(dataType)) {
-            str.append("CAST(")
-                    .append(fieldName)
-                    .append(" as TEXT)");
-        } else {
-            str.append("CAST(")
-                    .append(fieldName)
-                    .append(" as ")
-                    .append(dataType)
-                    .append(")");
-        }
-        return str.toString();
     }
 
     @Override

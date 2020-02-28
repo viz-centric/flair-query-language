@@ -2,17 +2,32 @@ package com.flair.bi.compiler.mysql;
 
 import com.flair.bi.compiler.SQLListener;
 import com.flair.bi.compiler.utils.SqlTimeConverter;
-import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Optional;
 
 public class MySQLListener extends SQLListener {
     public MySQLListener(Writer writer) {
         super(writer);
+
+        CAST_MAP.put("timestamp",
+                (field1) -> new StringBuilder()
+                        .append("STR_TO_DATE(")
+                        .append(field1.getFieldName())
+                        .append(",")
+                        .append("'%Y-%m-%d H:%i:%s'")
+                        .append(")"));
+        CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
+        CAST_MAP.put("date", CAST_MAP.get("timestamp"));
+
+        CAST_MAP.put("flair_string",
+                (field) -> new StringBuilder()
+                        .append("CAST(")
+                        .append(field.getFieldName())
+                        .append(" as CHAR)")
+        );
     }
     
     @Override
@@ -207,31 +222,6 @@ public class MySQLListener extends SQLListener {
         property.put(ctx, str.toString());
         
 	}
-
-	@Override
-    protected String onFlairCastFunction(FQLParser.Func_call_exprContext func_call_expr) {
-        StringBuilder str = new StringBuilder();
-        String dataType = func_call_expr.getChild(2).getChild(0).getText();
-        String fieldName = func_call_expr.getChild(2).getChild(2).getText();
-        if (Arrays.asList("timestamp", "date", "datetime").contains(dataType.toLowerCase())) {
-            str.append("STR_TO_DATE(")
-                    .append(fieldName)
-                    .append(",")
-                    .append("'%Y-%m-%d H:%i:%s'")
-                    .append(")");
-        } else if ("flair_string".equalsIgnoreCase(dataType)) {
-            str.append("CAST(")
-                    .append(fieldName)
-                    .append(" as CHAR)");
-        } else {
-            str.append("CAST(")
-                    .append(fieldName)
-                    .append(" as ")
-                    .append(dataType)
-                    .append(")");
-        }
-        return str.toString();
-    }
 
     @Override
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
