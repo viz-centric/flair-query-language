@@ -20,6 +20,19 @@ public class OracleListener extends SQLListener {
 						.append(field.getFieldName())
 						.append(" as CHAR)")
 		);
+
+		CAST_MAP.put("nvarchar2",
+				(field) -> new StringBuilder()
+						.append("CAST(")
+						.append(field.getFieldName())
+						.append(" as ")
+						.append(field.getDataType())
+						.append("(").append(field.getFieldName().length()).append(")")
+						.append(")")
+		);
+		CAST_MAP.put("varchar2", CAST_MAP.get("nvarchar2"));
+		CAST_MAP.put("varchar", CAST_MAP.get("nvarchar2"));
+
     }
 
 	@Override
