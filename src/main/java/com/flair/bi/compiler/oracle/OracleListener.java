@@ -18,7 +18,7 @@ public class OracleListener extends SQLListener {
 				(field) -> new StringBuilder()
 						.append("CAST(")
 						.append(field.getFieldName())
-						.append(" as CHAR)")
+						.append(" as varchar(").append(field.getFieldName().length()).append("))")
 		);
 
 		CAST_MAP.put("nvarchar2",
@@ -32,6 +32,7 @@ public class OracleListener extends SQLListener {
 		);
 		CAST_MAP.put("varchar2", CAST_MAP.get("nvarchar2"));
 		CAST_MAP.put("varchar", CAST_MAP.get("nvarchar2"));
+		CAST_MAP.put("char", CAST_MAP.get("flair_string"));
 
     }
 
