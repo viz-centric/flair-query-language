@@ -1,12 +1,16 @@
 package com.flair.bi.compiler.mysql;
 
+import com.flair.bi.compiler.FlairCastData;
 import com.flair.bi.compiler.SQLListener;
 import com.flair.bi.compiler.utils.SqlTimeConverter;
+import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class MySQLListener extends SQLListener {
     public MySQLListener(Writer writer) {
@@ -76,40 +80,28 @@ public class MySQLListener extends SQLListener {
                     .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
                     .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
                     .append(")");
-        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-        	str.append("EXTRACT(")
-        	.append("YEAR_MONTH")
-        	.append(" FROM ");
-        	if(ctx.func_call_expr().getChild(2).getText().contains(",")) {
-        		str.append("STR_TO_DATE( ")
-        		.append(ctx.func_call_expr().getChild(2).getText()+")");
-
-        	}
-        	else {
-        	str.append(ctx.func_call_expr().getChild(2).getText());
-        	}
-        	str.append(")");
         }
-        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-        	str.append("CONCAT(YEAR(");
-        	if(ctx.func_call_expr().getChild(2).getText().contains(",")) {
-        		str.append("STR_TO_DATE( ")
-        		.append(ctx.func_call_expr().getChild(2).getText()+")");
-
-        	}
-        	else {
-        	str.append(ctx.func_call_expr().getChild(2).getText());
-        	}
-        	str.append("),'-',QUARTER(");
-        	if(ctx.func_call_expr().getChild(2).getText().contains(",")) {
-        		str.append("STR_TO_DATE( ")
-        		.append(ctx.func_call_expr().getChild(2).getText()+")");
-
-        	}
-        	else {
-        	str.append(ctx.func_call_expr().getChild(2).getText());
-        	}
-        	str.append("))");
+        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(extractDatePart(ctx.func_call_expr(), "YEAR"))
+                    .append("-")
+                    .append(extractDatePart(ctx.func_call_expr(), "QUARTER"));
+        }
+        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(extractDatePart(ctx.func_call_expr(), "YEAR"))
+                    .append("-")
+                    .append(extractDatePart(ctx.func_call_expr(), "MONTH"));
+        }
+        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append(extractDatePartAndCast(ctx.func_call_expr(), "YEAR"))
+                    .append("-")
+                    .append(extractDatePartAndCast(ctx.func_call_expr(), "WEEK"));
+        }
+        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && Arrays.asList("YEAR", "QUARTER", "MONTH", "WEEK", "DAY").contains(ctx.func_call_expr().start.getText().toUpperCase())) {
+            str.append(extractDatePart(ctx.func_call_expr(), ctx.func_call_expr().start.getText()));
         }
         else {
        	 Optional.ofNullable(ctx.func_call_expr())
@@ -222,6 +214,32 @@ public class MySQLListener extends SQLListener {
         property.put(ctx, str.toString());
         
 	}
+
+    private CharSequence extractDatePart(FQLParser.Func_call_exprContext funcExpr, String datePart) {
+        StringBuilder str = new StringBuilder();
+        str.append("EXTRACT(")
+                .append(datePart)
+                .append(" FROM ");
+        if (funcExpr.getChild(2).getText().contains(",")) {
+            str.append("STR_TO_DATE( ")
+                    .append(funcExpr.getChild(2).getText() + ")");
+
+        } else {
+            str.append(funcExpr.getChild(2).getText());
+        }
+        str.append(")");
+        return str;
+    }
+
+    private CharSequence extractDatePartAndCast(FQLParser.Func_call_exprContext funcExpr, String datePart) {
+        CharSequence charSequence = extractDatePart(funcExpr, datePart);
+        Function<FlairCastData, CharSequence> flair_string = CAST_MAP.get("flair_string");
+        FlairCastData flairCastData = new FlairCastData();
+        flairCastData.setFieldName(funcExpr.getChild(2).getText());
+        flairCastData.setDataType("");
+        CharSequence newCharSeq = flair_string.apply(flairCastData);
+        return charSequence;
+    }
 
     @Override
     protected String composeFlairInterval(String expression, String operator, String hourOrDays, String number) {
