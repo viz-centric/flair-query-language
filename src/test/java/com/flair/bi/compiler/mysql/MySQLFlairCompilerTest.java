@@ -80,31 +80,37 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void dateFormatYear() throws CompilationException {
 		stmtTest("select year('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(year FROM '2019-01-09 25:00:00') from transactions where price = 500");
+				"select EXTRACT(year FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatYearWeek() throws CompilationException {
+		stmtTest("select yearweek('2019-01-09 25:00:00') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM CAST('2019-01-09 25:00:00' as CHAR)), '-', EXTRACT(WEEK FROM CAST('2019-01-09 25:00:00' as CHAR))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatQuarter() throws CompilationException {
 		stmtTest("select quarter('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(quarter FROM '2019-01-09 25:00:00') from transactions where price = 500");
+				"select EXTRACT(quarter FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatMonth() throws CompilationException {
 		stmtTest("select month('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(month FROM '2019-01-09 25:00:00') from transactions where price = 500");
+				"select EXTRACT(month FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatWeek() throws CompilationException {
 		stmtTest("select week('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(week FROM '2019-01-09 25:00:00') from transactions where price = 500");
+				"select EXTRACT(week FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatDay() throws CompilationException {
 		stmtTest("select day('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(day FROM '2019-01-09 25:00:00') from transactions where price = 500");
+				"select EXTRACT(day FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
 	}
 
 	@Test

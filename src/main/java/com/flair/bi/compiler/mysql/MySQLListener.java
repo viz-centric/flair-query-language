@@ -89,15 +89,11 @@ public class MySQLListener extends SQLListener {
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-            str.append(extractDatePart(ctx.func_call_expr(), "YEAR"))
-                    .append("-")
-                    .append(extractDatePart(ctx.func_call_expr(), "MONTH"));
+            str.append(extractCombinedDatePart(ctx.func_call_expr(), "YEAR-MONTH"));
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-            str.append(extractDatePartAndCast(ctx.func_call_expr(), "YEAR"))
-                    .append("-")
-                    .append(extractDatePartAndCast(ctx.func_call_expr(), "WEEK"));
+            str.append(extractCombinedDatePart(ctx.func_call_expr(), "YEAR-WEEK"));
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && Arrays.asList("YEAR", "QUARTER", "MONTH", "WEEK", "DAY").contains(ctx.func_call_expr().start.getText().toUpperCase())) {
@@ -215,30 +211,35 @@ public class MySQLListener extends SQLListener {
         
 	}
 
-    private CharSequence extractDatePart(FQLParser.Func_call_exprContext funcExpr, String datePart) {
+    private CharSequence extractCombinedDatePart(FQLParser.Func_call_exprContext func_call_expr, String type) {
+        String[] split = type.split("-");
         StringBuilder str = new StringBuilder();
-        str.append("EXTRACT(")
-                .append(datePart)
-                .append(" FROM ");
-        if (funcExpr.getChild(2).getText().contains(",")) {
-            str.append("STR_TO_DATE( ")
-                    .append(funcExpr.getChild(2).getText() + ")");
-
-        } else {
-            str.append(funcExpr.getChild(2).getText());
-        }
-        str.append(")");
+        str.append("CONCAT(")
+                .append(extractDatePartAndCast(func_call_expr, split[0]))
+                .append(", '-', ")
+                .append(extractDatePartAndCast(func_call_expr, split[1]))
+                .append(")");
         return str;
     }
 
-    private CharSequence extractDatePartAndCast(FQLParser.Func_call_exprContext funcExpr, String datePart) {
-        CharSequence charSequence = extractDatePart(funcExpr, datePart);
+    private CharSequence extractDatePart(FQLParser.Func_call_exprContext funcExpr, String datePart) {
         Function<FlairCastData, CharSequence> flair_string = CAST_MAP.get("flair_string");
         FlairCastData flairCastData = new FlairCastData();
         flairCastData.setFieldName(funcExpr.getChild(2).getText());
         flairCastData.setDataType("");
         CharSequence newCharSeq = flair_string.apply(flairCastData);
-        return charSequence;
+
+        StringBuilder str = new StringBuilder();
+        str.append("EXTRACT(")
+                .append(datePart)
+                .append(" FROM ");
+        str.append(newCharSeq);
+        str.append(")");
+        return str;
+    }
+
+    private CharSequence extractDatePartAndCast(FQLParser.Func_call_exprContext funcExpr, String datePart) {
+        return extractDatePart(funcExpr, datePart);
     }
 
     @Override
