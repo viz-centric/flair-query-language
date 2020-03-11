@@ -83,9 +83,7 @@ public class MySQLListener extends SQLListener {
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-            str.append(extractDatePart(ctx.func_call_expr(), "YEAR"))
-                    .append("-")
-                    .append(extractDatePart(ctx.func_call_expr(), "QUARTER"));
+            str.append(extractCombinedDatePart(ctx.func_call_expr(), "YEAR-QUARTER"));
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
@@ -223,7 +221,7 @@ public class MySQLListener extends SQLListener {
     }
 
     private CharSequence extractDatePart(FQLParser.Func_call_exprContext funcExpr, String datePart) {
-        Function<FlairCastData, CharSequence> flair_string = CAST_MAP.get("flair_string");
+        Function<FlairCastData, CharSequence> flair_string = CAST_MAP.get("timestamp");
         FlairCastData flairCastData = new FlairCastData();
         flairCastData.setFieldName(funcExpr.getChild(2).getText());
         flairCastData.setDataType("");

@@ -79,38 +79,50 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 
 	@Test
 	public void dateFormatYear() throws CompilationException {
-		stmtTest("select year('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(year FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
+		stmtTest("select year('2019-01-09 21:00:00') from transactions where price = 500",
+				"select EXTRACT(year FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatYearWeek() throws CompilationException {
-		stmtTest("select yearweek('2019-01-09 25:00:00') from transactions where price = 500",
-				"select CONCAT(EXTRACT(YEAR FROM CAST('2019-01-09 25:00:00' as CHAR)), '-', EXTRACT(WEEK FROM CAST('2019-01-09 25:00:00' as CHAR))) from transactions where price = 500");
+		stmtTest("select yearweek('2019-01-09 21:00:00') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')), '-', EXTRACT(WEEK FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s'))) from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatYearQuarter() throws CompilationException {
+		stmtTest("select yearquarter('2019-01-09 21:00:00') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')), '-', EXTRACT(QUARTER FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s'))) from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatYearMonth() throws CompilationException {
+		stmtTest("select yearmonth('2019-01-09 21:00:00') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')), '-', EXTRACT(MONTH FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s'))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatQuarter() throws CompilationException {
-		stmtTest("select quarter('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(quarter FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
+		stmtTest("select quarter('2019-01-09 21:00:00') from transactions where price = 500",
+				"select EXTRACT(quarter FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatMonth() throws CompilationException {
-		stmtTest("select month('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(month FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
+		stmtTest("select month('2019-01-09 21:00:00') from transactions where price = 500",
+				"select EXTRACT(month FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatWeek() throws CompilationException {
-		stmtTest("select week('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(week FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
+		stmtTest("select week('2019-01-09 21:00:00') from transactions where price = 500",
+				"select EXTRACT(week FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatDay() throws CompilationException {
-		stmtTest("select day('2019-01-09 25:00:00') from transactions where price = 500",
-				"select EXTRACT(day FROM CAST('2019-01-09 25:00:00' as CHAR)) from transactions where price = 500");
+		stmtTest("select day('2019-01-09 21:00:00') from transactions where price = 500",
+				"select EXTRACT(day FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
 	}
 
 	@Test
