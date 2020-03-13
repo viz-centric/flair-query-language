@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.project.bi</groupId>
 	<artifactId>flair-query-language</artifactId>
-	<version>1.6.19-SNAPSHOT</version>
+	<version>1.6.19</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -31,7 +31,7 @@
 		<developerConnection>
             scm:git:https://github.com/viz-centric/flair-query-language.git
         </developerConnection>
-		<tag>HEAD</tag>
+		<tag>v1.6.19</tag>
 	</scm>
 	<distributionManagement>
 		<repository>
