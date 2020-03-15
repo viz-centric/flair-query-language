@@ -251,7 +251,7 @@ public class MySQLListener extends SQLListener {
     }
 
     @Override
-    protected String getHourOrDaysFromLetter(String letter) {
+    protected String getHourOrDaysFromLetter(String letter, String number) {
         return SqlTimeConverter.toSingular(letter);
     }
 
