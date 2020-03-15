@@ -303,7 +303,7 @@ public class OracleListener extends SQLListener {
 	}
 
 	@Override
-	protected String getHourOrDaysFromLetter(String letter) {
-		return SqlTimeConverter.toSingular(letter);
+	protected String getHourOrDaysFromLetter(String letter, String number) {
+		return SqlTimeConverter.toSingular(letter) + "(" + number.length() + ")";
 	}
 }

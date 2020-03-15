@@ -1029,8 +1029,8 @@ public abstract class SQLListener extends AbstractFQLListener {
         String rawOperator = getRawStringValue(operator);
         String rawSecondArgument = getRawStringValue(secondArgument);
         String letter = rawSecondArgument.split(" ")[1];
-        String hourOrDays = getHourOrDaysFromLetter(letter);
         String number = rawSecondArgument.split(" ")[0];
+        String hourOrDays = getHourOrDaysFromLetter(letter, number);
 
         return composeFlairInterval(firstArgumentText, rawOperator, hourOrDays, number);
     }
@@ -1048,7 +1048,7 @@ public abstract class SQLListener extends AbstractFQLListener {
         return operator.substring(1, operator.length() - 1);
     }
 
-    protected String getHourOrDaysFromLetter(String letter) {
+    protected String getHourOrDaysFromLetter(String letter, String number) {
         return SqlTimeConverter.toPlural(letter);
     }
 
