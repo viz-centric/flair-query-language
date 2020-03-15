@@ -98,7 +98,7 @@ public class OracleListener extends SQLListener {
         //func_call_expr 
 		if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
 				&& ("now".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
-			str.append("sysdate");
+			str.append(onFlairNowFunction(ctx.func_call_expr()));
 		} else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
 				&& ("distinct_count".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
 			str.append("count(distinct ")
@@ -295,6 +295,11 @@ public class OracleListener extends SQLListener {
 				operator +
 				" " + "interval '" + number + "' " + hourOrDays +
 				")";
+	}
+
+	@Override
+	protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
+		return "sysdate";
 	}
 
 	@Override
