@@ -152,8 +152,7 @@ public class KafkaListener extends PostgresListener {
 					str.append(" ")
 							.append(ctx.K_HAVING().getText())
 							.append(" ")
-							.append(ctx.expr().size() == 2 ? property.get(ctx.expr(1)) :
-									ctx.expr(0).getText());
+							.append(ctx.expr().size() == 2 ? property.get(ctx.expr(1)) : property.get(ctx.expr(0)));
 				}
 
 			}

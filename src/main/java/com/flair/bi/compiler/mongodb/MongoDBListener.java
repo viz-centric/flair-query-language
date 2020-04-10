@@ -139,8 +139,7 @@ public class MongoDBListener extends AbstractFQLListener {
                 if (ctx.K_HAVING() != null) {
                     str.append(ctx.K_HAVING().getText())
                             .append(" ")
-                            .append(ctx.expr().size() == 2 ? property.get(ctx.expr(1)) :
-                                    property.get(ctx.expr(0)));
+                            .append(ctx.expr().size() == 2 ? property.get(ctx.expr(1)) : property.get(ctx.expr(0)));
                 }
 
             }

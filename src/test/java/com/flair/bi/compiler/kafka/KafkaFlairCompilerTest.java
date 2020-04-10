@@ -222,4 +222,13 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STRINGTOTIMESTAMP(121,'yyyy-MM-dd HH:mm:ss')) GROUP BY customer_city");
 	}
+
+	@Test
+	public void selectHavingWithInnerSelect() throws CompilationException {
+		LocalDateTime now = LocalDateTime.now(clock);
+		String formatted = now.format(ISO_LOCAL_DATE_TIME);
+		int fourHours = 4 * 60 * 60 * 1000;
+		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') AND NOW()) LIMIT 20",
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') - " + fourHours + ") AND STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''')) LIMIT 20");
+	}
 }

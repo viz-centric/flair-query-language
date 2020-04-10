@@ -119,14 +119,20 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 	public void selectHaving() throws CompilationException {
 		stmtTest(
 				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price) > 1000) LIMIT 20",
-				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price)>1000) LIMIT 20");
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price) > 1000) LIMIT 20");
 	}
 
 	@Test
 	public void selectHavingWithoutBrackets() throws CompilationException {
 		stmtTest(
 				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > 1000 LIMIT 20",
-				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price)>1000 LIMIT 20");
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > 1000 LIMIT 20");
+	}
+
+	@Test
+	public void selectHavingWithInnerSelect() throws CompilationException {
+		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') AND NOW()) LIMIT 20",
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (NOW() - interval '4 hours') AND NOW()) LIMIT 20");
 	}
 
 	@Test

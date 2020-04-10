@@ -219,4 +219,10 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 				"select EXTRACT(month FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss')) from transactions where price = 500");
 	}
 
+	@Test
+	public void selectHavingWithInnerSelect() throws CompilationException {
+		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') AND NOW()) LIMIT 20",
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (NOW() - interval '4' hour) AND NOW()) LIMIT 20");
+	}
+
 }
