@@ -115,14 +115,14 @@ public class SnowflakeFlairCompilerTest extends AbstractSqlCompilerUnitTest<Snow
 	public void selectHaving() throws CompilationException {
 		stmtTest(
 				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price) > 1000) LIMIT 20",
-				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price)>1000) LIMIT 20");
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING (COUNT(product_price) > 1000) LIMIT 20");
 	}
 
 	@Test
 	public void selectHavingWithoutBrackets() throws CompilationException {
 		stmtTest(
 				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > 1000 LIMIT 20",
-				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price)>1000 LIMIT 20");
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > 1000 LIMIT 20");
 	}
 
 	@Test

@@ -148,4 +148,10 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(flair_string, product_id)",
 				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as varchar(10))");
 	}
+
+	@Test
+	public void selectHavingWithInnerSelect() throws CompilationException {
+		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') AND NOW()) LIMIT 20",
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (sysdate - interval '4' hour(1)) AND sysdate) FETCH NEXT 20 ROWS ONLY");
+	}
 }
