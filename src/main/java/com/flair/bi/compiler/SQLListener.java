@@ -33,7 +33,7 @@ public abstract class SQLListener extends AbstractFQLListener {
                         .append("to_timestamp(")
                         .append(field1.getFieldName())
                         .append(",")
-                        .append("'YYYY-MM-DD HH24:MI:SS'")
+                        .append("'YYYY-MM-DD HH24:MI:SS.MS'")
                         .append(")"));
         CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
         CAST_MAP.put("date", CAST_MAP.get("timestamp"));

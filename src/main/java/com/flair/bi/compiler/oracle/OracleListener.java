@@ -14,6 +14,16 @@ public class OracleListener extends SQLListener {
     public OracleListener(Writer writer) {
         super(writer);
 
+		CAST_MAP.put("timestamp",
+				(field1) -> new StringBuilder()
+						.append("to_timestamp(")
+						.append(field1.getFieldName())
+						.append(",")
+						.append("'YYYY-MM-DD HH24:MI:SS.FF3'")
+						.append(")"));
+		CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
+		CAST_MAP.put("date", CAST_MAP.get("timestamp"));
+
 		CAST_MAP.put("flair_string",
 				(field) -> new StringBuilder()
 						.append("CAST(")

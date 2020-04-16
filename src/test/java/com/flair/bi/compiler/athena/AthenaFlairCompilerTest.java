@@ -113,8 +113,8 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 	@Test
 	public void parseFlairTypeCast() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= parse_datetime('2019-11-03 22:00:00','yyyy-MM-dd HH:mm:ss') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20");
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= parse_datetime('2019-11-03 22:00:00.000','yyyy-MM-dd HH:mm:ss.SSS') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20");
 	}
 
 	@Test
@@ -172,51 +172,51 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 	@Test
 	public void parseWhereInLongExpression() throws CompilationException {
 		stmtTest(
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), 1231) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (parse_datetime('2019-11-03 22:00:00','yyyy-MM-dd HH:mm:ss'),1231) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (parse_datetime('2019-11-03 22:00:00.000','yyyy-MM-dd HH:mm:ss.SSS'),1231) GROUP BY customer_city");
 	}
 
 	@Test
 	public void parseWhereInOneCondition() throws CompilationException {
 		stmtTest(
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (parse_datetime(121,'yyyy-MM-dd HH:mm:ss')) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (parse_datetime(121,'yyyy-MM-dd HH:mm:ss.SSS')) GROUP BY customer_city");
 	}
 
 	@Test
 	public void dateFormatYear() throws CompilationException {
-		stmtTest("select year('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(year FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss')) from transactions where price = 500");
+		stmtTest("select year('2019-01-09 21:00:00.000') from transactions where price = 500",
+				"select EXTRACT(year FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatYearWeek() throws CompilationException {
-		stmtTest("select yearweek('2019-01-09 21:00:00') from transactions where price = 500",
-				"select CONCAT(EXTRACT(YEAR FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss')), '-', EXTRACT(WEEK FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss'))) from transactions where price = 500");
+		stmtTest("select yearweek('2019-01-09 21:00:00.000') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS')), '-', EXTRACT(WEEK FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS'))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatYearMonth() throws CompilationException {
-		stmtTest("select yearmonth('2019-01-09 21:00:00') from transactions where price = 500",
-				"select CONCAT(EXTRACT(YEAR FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss')), '-', EXTRACT(MONTH FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss'))) from transactions where price = 500");
+		stmtTest("select yearmonth('2019-01-09 21:00:00.000') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS')), '-', EXTRACT(MONTH FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS'))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatYearQuarter() throws CompilationException {
-		stmtTest("select yearquarter('2019-01-09 21:00:00') from transactions where price = 500",
-				"select CONCAT(EXTRACT(YEAR FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss')), '-', EXTRACT(QUARTER FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss'))) from transactions where price = 500");
+		stmtTest("select yearquarter('2019-01-09 21:00:00.000') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS')), '-', EXTRACT(QUARTER FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS'))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatQuarter() throws CompilationException {
-		stmtTest("select quarter('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(quarter FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss')) from transactions where price = 500");
+		stmtTest("select quarter('2019-01-09 21:00:00.000') from transactions where price = 500",
+				"select EXTRACT(quarter FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatMonth() throws CompilationException {
-		stmtTest("select month('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(month FROM parse_datetime('2019-01-09 21:00:00','yyyy-MM-dd HH:mm:ss')) from transactions where price = 500");
+		stmtTest("select month('2019-01-09 21:00:00.000') from transactions where price = 500",
+				"select EXTRACT(month FROM parse_datetime('2019-01-09 21:00:00.000','yyyy-MM-dd HH:mm:ss.SSS')) from transactions where price = 500");
 	}
 
 	@Test
