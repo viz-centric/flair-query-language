@@ -165,8 +165,8 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 	@Test
 	public void parseFlairTypeCast() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STRINGTOTIMESTAMP('2019-11-03 22:00:00','yyyy-MM-dd HH:mm:ss') GROUP BY updated_on  LIMIT 20");
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STRINGTOTIMESTAMP('2019-11-03 22:00:00.000','yyyy-MM-dd HH:mm:ss.SSS') GROUP BY updated_on  LIMIT 20");
 	}
 
 	@Test
@@ -200,7 +200,7 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 		int fourHours = 4 * 60 * 60 * 1000;
 		stmtTest(
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN __FLAIR_NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03T22:00:00.000Z'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AND (STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','yyyy-MM-dd HH:mm:ss') - " + fourHours + ") GROUP BY updated_on  LIMIT 20");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AND (STRINGTOTIMESTAMP('2019-11-03T22:00:00.000Z','yyyy-MM-dd HH:mm:ss.SSS') - " + fourHours + ") GROUP BY updated_on  LIMIT 20");
 	}
 
 	@Test
@@ -212,15 +212,15 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 	@Test
 	public void parseWhereInLongExpression() throws CompilationException {
 		stmtTest(
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), 1231) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STRINGTOTIMESTAMP('2019-11-03 22:00:00','yyyy-MM-dd HH:mm:ss'),1231) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STRINGTOTIMESTAMP('2019-11-03 22:00:00.000','yyyy-MM-dd HH:mm:ss.SSS'),1231) GROUP BY customer_city");
 	}
 
 	@Test
 	public void parseWhereInOneCondition() throws CompilationException {
 		stmtTest(
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STRINGTOTIMESTAMP(121,'yyyy-MM-dd HH:mm:ss')) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STRINGTOTIMESTAMP(121,'yyyy-MM-dd HH:mm:ss.SSS')) GROUP BY customer_city");
 	}
 
 	@Test

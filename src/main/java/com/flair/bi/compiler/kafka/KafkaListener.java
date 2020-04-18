@@ -29,7 +29,7 @@ public class KafkaListener extends PostgresListener {
 						.append("STRINGTOTIMESTAMP(")
 						.append(field1.getFieldName())
 						.append(",")
-						.append("'yyyy-MM-dd HH:mm:ss'")
+						.append("'yyyy-MM-dd HH:mm:ss.SSS'")
 						.append(")"));
 		CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
 		CAST_MAP.put("date", CAST_MAP.get("timestamp"));

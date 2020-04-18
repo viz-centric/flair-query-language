@@ -9,6 +9,16 @@ import java.util.Optional;
 public class SparkListener extends SQLListener {
     public SparkListener(Writer writer) {
         super(writer);
+
+        CAST_MAP.put("timestamp",
+                (field1) -> new StringBuilder()
+                        .append("to_timestamp(")
+                        .append(field1.getFieldName())
+                        .append(",")
+                        .append("'YYYY-MM-DD HH24:MI:SS.SSS'")
+                        .append(")"));
+        CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
+        CAST_MAP.put("date", CAST_MAP.get("timestamp"));
     }
 
     @Override
