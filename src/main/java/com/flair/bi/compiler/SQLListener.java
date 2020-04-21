@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 public abstract class SQLListener extends AbstractFQLListener {
 
+    private static final List<String> DATE_TIME_DATA_TYPES = Arrays.asList("timestamp", "date", "datetime");
     protected final Map<String, Function<FlairCastData, CharSequence>> CAST_MAP = new ConcurrentHashMap<>();
 
     public enum ParseResult {
@@ -33,7 +35,7 @@ public abstract class SQLListener extends AbstractFQLListener {
                         .append("to_timestamp(")
                         .append(field1.getFieldName())
                         .append(",")
-                        .append("'YYYY-MM-DD HH24:MI:SS.MS'")
+                        .append("'YYYY-MM-DD HH24:MI:SS'")
                         .append(")"));
         CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
         CAST_MAP.put("date", CAST_MAP.get("timestamp"));
@@ -703,6 +705,8 @@ public abstract class SQLListener extends AbstractFQLListener {
             } else if ("__FLAIR_NOW".equalsIgnoreCase(funcName.get())
                 || "NOW".equalsIgnoreCase(funcName.get())) {
                 result = Optional.ofNullable(onFlairNowFunction(ctx));
+            } else if ("__FLAIR_TRUNC".equalsIgnoreCase(funcName.get())) {
+                result = Optional.ofNullable(onFlairTruncFunction(ctx));
             }
             if (result.isPresent()) {
                 property.put(ctx, result.get());
@@ -726,6 +730,24 @@ public abstract class SQLListener extends AbstractFQLListener {
         str.append(")");
 
         property.put(ctx, str.toString());
+    }
+
+    protected String onFlairTruncFunction(FQLParser.Func_call_exprContext func_call_expr) {
+        String dataType = func_call_expr.getChild(2).getChild(2).getText();
+        ParseTree fieldName = func_call_expr.getChild(2).getChild(0);
+        String finalFieldName = property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText();
+
+        if (!DATE_TIME_DATA_TYPES.contains(dataType.toLowerCase())) {
+            return finalFieldName;
+        }
+
+        String truncated = onDateTruncate(finalFieldName);
+        return truncated == null ? finalFieldName : truncated;
+
+    }
+
+    protected String onDateTruncate(String finalFieldName) {
+        return null;
     }
 
     protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {

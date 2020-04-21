@@ -32,4 +32,9 @@ public class RedshiftListener extends PostgresListener {
 	protected String getHourOrDaysFromLetter(String letter, String number) {
 		return SqlTimeConverter.toSingular(letter);
 	}
+
+	@Override
+	protected String onDateTruncate(String finalFieldName) {
+		return "date_trunc('second', " + finalFieldName + ")";
+	}
 }

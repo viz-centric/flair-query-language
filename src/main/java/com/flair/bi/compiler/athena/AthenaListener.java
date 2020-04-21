@@ -15,7 +15,7 @@ public class AthenaListener extends MySQLListener {
                         .append("parse_datetime(")
                         .append(field1.getFieldName())
                         .append(",")
-                        .append("'yyyy-MM-dd HH:mm:ss.SSS'")
+                        .append("'yyyy-MM-dd HH:mm:ss'")
                         .append(")"));
         CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
         CAST_MAP.put("date", CAST_MAP.get("timestamp"));
@@ -67,6 +67,11 @@ public class AthenaListener extends MySQLListener {
                 operator +
                 " " + "interval '" + number + "' " + hourOrDays +
                 ")";
+    }
+
+    @Override
+    protected String onDateTruncate(String finalFieldName) {
+        return "date_trunc('second', " + finalFieldName + ")";
     }
 
 }

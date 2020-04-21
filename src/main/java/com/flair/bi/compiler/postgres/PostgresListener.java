@@ -18,7 +18,7 @@ public class PostgresListener extends SQLListener {
                         .append("to_timestamp(")
                         .append(field1.getFieldName())
                         .append(",")
-                        .append("'YYYY-MM-DD HH24:MI:SS.MS'")
+                        .append("'YYYY-MM-DD HH24:MI:SS'")
                         .append(")"));
         CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
         CAST_MAP.put("date", CAST_MAP.get("timestamp"));
@@ -262,6 +262,11 @@ public class PostgresListener extends SQLListener {
         }
 
         property.put(ctx, sb.toString());
+    }
+
+    @Override
+    protected String onDateTruncate(String finalFieldName) {
+        return "date_trunc('second', " + finalFieldName + ")";
     }
 
 }

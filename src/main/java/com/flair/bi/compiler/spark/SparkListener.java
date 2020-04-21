@@ -15,7 +15,7 @@ public class SparkListener extends SQLListener {
                         .append("to_timestamp(")
                         .append(field1.getFieldName())
                         .append(",")
-                        .append("'YYYY-MM-DD HH24:MI:SS.SSS'")
+                        .append("'YYYY-MM-DD HH24:MI:SS'")
                         .append(")"));
         CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
         CAST_MAP.put("date", CAST_MAP.get("timestamp"));
@@ -61,4 +61,11 @@ public class SparkListener extends SQLListener {
 
         property.put(ctx, sb.toString());
     }
+
+    @Override
+    protected String onDateTruncate(String finalFieldName) {
+        return "date_trunc(" + finalFieldName + ", 'second')";
+    }
+
+
 }

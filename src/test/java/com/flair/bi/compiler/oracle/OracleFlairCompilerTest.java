@@ -96,8 +96,8 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 	@Test
 	public void parseFlairIntervalAndCastOperation() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03 22:00:00.000'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN sysdate AND (to_timestamp('2019-11-03 22:00:00.000','YYYY-MM-DD HH24:MI:SS.FF3') - interval '4' hour(1)) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC OFFSET 0 ROWS FETCH NEXT 20 ROWS ONLY");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03 22:00:00'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN sysdate AND (to_timestamp('2019-11-03 22:00:00','YYYY-MM-DD HH24:MI:SS') - interval '4' hour(1)) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC OFFSET 0 ROWS FETCH NEXT 20 ROWS ONLY");
 	}
 
 	@Test
@@ -110,15 +110,15 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 	@Test
 	public void parseWhereInLongExpression() throws CompilationException {
 		stmtTest(
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000'), 1231) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (to_timestamp('2019-11-03 22:00:00.000','YYYY-MM-DD HH24:MI:SS.FF3'),1231) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (to_timestamp('2019-11-03 22:00:00','YYYY-MM-DD HH24:MI:SS'),1231) GROUP BY customer_city");
 	}
 
 	@Test
 	public void parseWhereInOneCondition() throws CompilationException {
 		stmtTest(
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (to_timestamp(121,'YYYY-MM-DD HH24:MI:SS.FF3')) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (to_timestamp(121,'YYYY-MM-DD HH24:MI:SS')) GROUP BY customer_city");
 	}
 
 	@Test
@@ -153,5 +153,17 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 	public void selectHavingWithInnerSelect() throws CompilationException {
 		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') AND NOW()) LIMIT 20",
 				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (sysdate - interval '4' hour(1)) AND sysdate) FETCH NEXT 20 ROWS ONLY");
+	}
+
+	@Test
+	public void flairTruncWithTimestamp() throws CompilationException {
+		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp) > 0",
+				"select CAST(inserted_on as date) from transactions where price = 500 and CAST(udpated_on as date) > 0");
+	}
+
+	@Test
+	public void flairTruncWithVarchar() throws CompilationException {
+		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int) > 0",
+				"select inserted_on from transactions where price = 500 and udpated_on > 0");
 	}
 }

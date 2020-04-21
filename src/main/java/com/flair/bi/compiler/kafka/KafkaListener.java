@@ -29,7 +29,7 @@ public class KafkaListener extends PostgresListener {
 						.append("STRINGTOTIMESTAMP(")
 						.append(field1.getFieldName())
 						.append(",")
-						.append("'yyyy-MM-dd HH:mm:ss.SSS'")
+						.append("'yyyy-MM-dd HH:mm:ss'")
 						.append(")"));
 		CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
 		CAST_MAP.put("date", CAST_MAP.get("timestamp"));
@@ -52,7 +52,7 @@ public class KafkaListener extends PostgresListener {
     @Override
     protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
 		String formatted = LocalDateTime.now(clock).format(ISO_DATE_TIME);
-        return "STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss.SSS''Z''')";
+        return "STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss''Z''')";
     }
 
     @Override
@@ -162,5 +162,10 @@ public class KafkaListener extends PostgresListener {
 		}
 
 		property.put(ctx, str.toString());
+	}
+
+	@Override
+	protected String onDateTruncate(String finalFieldName) {
+		return null;
 	}
 }
