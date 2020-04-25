@@ -79,50 +79,50 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 
 	@Test
 	public void dateFormatYear() throws CompilationException {
-		stmtTest("select year('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(year FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
+		stmtTest("select year('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select EXTRACT(year FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatYearWeek() throws CompilationException {
-		stmtTest("select yearweek('2019-01-09 21:00:00') from transactions where price = 500",
-				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')), '-', EXTRACT(WEEK FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s'))) from transactions where price = 500");
+		stmtTest("select yearweek('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')), '-', EXTRACT(WEEK FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f'))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatYearQuarter() throws CompilationException {
-		stmtTest("select yearquarter('2019-01-09 21:00:00') from transactions where price = 500",
-				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')), '-', EXTRACT(QUARTER FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s'))) from transactions where price = 500");
+		stmtTest("select yearquarter('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')), '-', EXTRACT(QUARTER FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f'))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatYearMonth() throws CompilationException {
-		stmtTest("select yearmonth('2019-01-09 21:00:00') from transactions where price = 500",
-				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')), '-', EXTRACT(MONTH FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s'))) from transactions where price = 500");
+		stmtTest("select yearmonth('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')), '-', EXTRACT(MONTH FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f'))) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatQuarter() throws CompilationException {
-		stmtTest("select quarter('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(quarter FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
+		stmtTest("select quarter('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select EXTRACT(quarter FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatMonth() throws CompilationException {
-		stmtTest("select month('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(month FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
+		stmtTest("select month('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select EXTRACT(month FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatWeek() throws CompilationException {
-		stmtTest("select week('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(week FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
+		stmtTest("select week('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select EXTRACT(week FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')) from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatDay() throws CompilationException {
-		stmtTest("select day('2019-01-09 21:00:00') from transactions where price = 500",
-				"select EXTRACT(day FROM STR_TO_DATE('2019-01-09 21:00:00','%Y-%m-%d H:%i:%s')) from transactions where price = 500");
+		stmtTest("select day('2019-01-09 21:00:00.000000') from transactions where price = 500",
+				"select EXTRACT(day FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')) from transactions where price = 500");
 	}
 
 	@Test
@@ -188,8 +188,8 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void parseFlairTypeCast() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STR_TO_DATE('2019-11-03 22:00:00','%Y-%m-%d H:%i:%s') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000000') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= STR_TO_DATE('2019-11-03 22:00:00.000000','%Y-%m-%d %H:%i:%s.%f') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test
@@ -221,8 +221,8 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void parseFlairIntervalAndCastOperation() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (STR_TO_DATE('2019-11-03 22:00:00','%Y-%m-%d H:%i:%s') - interval 4 hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000000'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (STR_TO_DATE('2019-11-03 22:00:00.000000','%Y-%m-%d %H:%i:%s.%f') - interval 4 hour) GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test
@@ -242,15 +242,15 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void parseWhereInLongExpression() throws CompilationException {
 		stmtTest(
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), 1231) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE('2019-11-03 22:00:00','%Y-%m-%d H:%i:%s'),1231) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000000'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE('2019-11-03 22:00:00.000000','%Y-%m-%d %H:%i:%s.%f'),1231) GROUP BY customer_city");
 	}
 
 	@Test
 	public void parseWhereInOneCondition() throws CompilationException {
 		stmtTest(
 				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, 121) ) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE(121,'%Y-%m-%d H:%i:%s')) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (STR_TO_DATE(121,'%Y-%m-%d %H:%i:%s.%f')) GROUP BY customer_city");
 	}
 
 	@Test
