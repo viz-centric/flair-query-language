@@ -21,7 +21,7 @@ public class MySQLListener extends SQLListener {
                         .append("STR_TO_DATE(")
                         .append(field1.getFieldName())
                         .append(",")
-                        .append("'%Y-%m-%d H:%i:%s'")
+                        .append("'%Y-%m-%d %H:%i:%s.%f'")
                         .append(")"));
         CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
         CAST_MAP.put("date", CAST_MAP.get("timestamp"));

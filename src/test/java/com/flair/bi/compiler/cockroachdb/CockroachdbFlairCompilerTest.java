@@ -165,8 +165,8 @@ public class CockroachdbFlairCompilerTest extends AbstractCompilerUnitTest<Cockr
 	@Test
 	public void parseFlairIntervalAndCastOperation() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03 22:00:00'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (timestamptz '2019-11-03 22:00:00' - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(__FLAIR_CAST(timestamp,'2019-11-03 22:00:00.000000'), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND (timestamptz '2019-11-03 22:00:00.000000' - interval '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test
@@ -179,20 +179,32 @@ public class CockroachdbFlairCompilerTest extends AbstractCompilerUnitTest<Cockr
 	@Test
 	public void parseWhereInLongExpression() throws CompilationException {
 		stmtTest(
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00'), 1231) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (timestamptz '2019-11-03 22:00:00',1231) GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (__FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000000'), 1231) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (timestamptz '2019-11-03 22:00:00.000000',1231) GROUP BY customer_city");
 	}
 
 	@Test
 	public void parseWhereInOneCondition() throws CompilationException {
 		stmtTest(
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, '2019-11-03 22:00:00') ) GROUP BY customer_city",
-				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (timestamptz '2019-11-03 22:00:00') GROUP BY customer_city");
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN ( __FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000000') ) GROUP BY customer_city",
+				"SELECT customer_city as customer_city FROM ecommerce WHERE product_id IN (timestamptz '2019-11-03 22:00:00.000000') GROUP BY customer_city");
 	}
 
 	@Test
 	public void selectHavingWithInnerSelect() throws CompilationException {
 		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') AND NOW()) LIMIT 20",
 				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (NOW() - interval '4 hours') AND NOW()) LIMIT 20");
+	}
+
+	@Test
+	public void flairTruncWithTimestamp() throws CompilationException {
+		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp) > 0",
+				"select date_trunc('second', inserted_on) from transactions where price = 500 and date_trunc('second', udpated_on) > 0");
+	}
+
+	@Test
+	public void flairTruncWithVarchar() throws CompilationException {
+		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int) > 0",
+				"select inserted_on from transactions where price = 500 and udpated_on > 0");
 	}
 }

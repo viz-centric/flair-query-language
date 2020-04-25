@@ -19,7 +19,7 @@ public class OracleListener extends SQLListener {
 						.append("to_timestamp(")
 						.append(field1.getFieldName())
 						.append(",")
-						.append("'YYYY-MM-DD HH24:MI:SS.FF3'")
+						.append("'YYYY-MM-DD HH24:MI:SS.FF6'")
 						.append(")"));
 		CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
 		CAST_MAP.put("date", CAST_MAP.get("timestamp"));
@@ -315,5 +315,10 @@ public class OracleListener extends SQLListener {
 	@Override
 	protected String getHourOrDaysFromLetter(String letter, String number) {
 		return SqlTimeConverter.toSingular(letter) + "(" + number.length() + ")";
+	}
+
+	@Override
+	protected String onDateTruncate(String finalFieldName) {
+		return "CAST(" + finalFieldName + " as date)";
 	}
 }
