@@ -118,6 +118,13 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 	}
 
 	@Test
+	public void parseFlairTypeCastString() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on in (__FLAIR_CAST(string, '177')) GROUP BY updated_on",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on in (CAST('177' as VARCHAR)) GROUP BY updated_on");
+	}
+
+	@Test
 	public void showTablesLike() throws CompilationException {
 		stmtTest("show tables like '%pera%'", "SHOW TABLES '*pera*'");
 	}
