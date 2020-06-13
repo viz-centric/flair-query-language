@@ -68,6 +68,7 @@ K_THEN: T H E N;
 K_ELSE: E L S E;
 K_END: E N D;
 K_ON: O N;
+K_FLAIR_RAW: '__' F L A I R '_' R A W;
 K_USING: U S I N G;
 K_LEFT: L E F T;
 K_OUTER: O U T E R;
@@ -93,6 +94,10 @@ NUMERIC_LITERAL
 
 STRING_LITERAL
  : '\'' ( ~'\'' | '\'\'' )* '\''
+ ;
+
+RAW_LITERAL
+ : '[[' (.*?) ']]'
  ;
 
 BLOB_LITERAL:
