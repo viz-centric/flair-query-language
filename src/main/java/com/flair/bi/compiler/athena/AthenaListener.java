@@ -27,6 +27,7 @@ public class AthenaListener extends MySQLListener {
                         .append(" as VARCHAR)")
         );
         CAST_MAP.put("string", CAST_MAP.get("flair_string"));
+        CAST_MAP.remove("varchar");
     }
 
     @Override

@@ -32,6 +32,7 @@ public class MySQLListener extends SQLListener {
                         .append(field.getFieldName())
                         .append(" as CHAR)")
         );
+        CAST_MAP.put("varchar", CAST_MAP.get("flair_string"));
     }
     
     @Override
