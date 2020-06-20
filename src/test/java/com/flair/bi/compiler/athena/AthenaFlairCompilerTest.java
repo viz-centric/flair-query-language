@@ -239,6 +239,13 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 	}
 
 	@Test
+	public void parseFlairCastVarchar() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(Varchar, product_id)",
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as Varchar)");
+	}
+
+	@Test
 	public void flairTruncWithVarchar() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int) > 0",
 				"select inserted_on from transactions where price = 500 and udpated_on > 0");
