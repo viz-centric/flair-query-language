@@ -106,6 +106,7 @@ table_or_subquery
  | '(' ( table_or_subquery ( ',' table_or_subquery )*
        | join_clause )
    ')' ( K_AS? table_alias )?
+ | K_FLAIR_RAW '(' raw_query ')' ( K_AS? table_alias )?
  | '(' select_stmt ')' ( K_AS? table_alias )?
  ;
 
@@ -264,6 +265,9 @@ table_name
  ;
 database_name
  : any_name
+ ;
+raw_query
+ : RAW_LITERAL
  ;
 column_name
   : any_name

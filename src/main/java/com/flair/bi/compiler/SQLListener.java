@@ -440,6 +440,19 @@ public abstract class SQLListener extends AbstractFQLListener {
     public void exitTable_or_subquery(FQLParser.Table_or_subqueryContext ctx) {
         StringBuilder str = new StringBuilder();
 
+        // | K_FLAIR_RAW '(' raw_query ')' ( K_AS? table_alias )?
+        Optional.ofNullable(ctx.raw_query())
+                .ifPresent(x -> {
+                    str.append("(")
+                            .append(x.getText(), 2, x.getText().length() - 2)
+                            .append(")")
+                            .append(" ")
+                            .append(ctx.K_AS() == null ? "" : ctx.K_AS().getText() + " ");
+
+                    Optional.ofNullable(property.get(ctx.table_alias()))
+                            .ifPresent(str::append);
+                });
+
         //'(' select_stmt ')' ( K_AS? table_alias )?
         Optional.ofNullable(property.get(ctx.select_stmt()))
                 .ifPresent(x -> {
