@@ -28,6 +28,8 @@ public class AthenaListener extends MySQLListener {
         );
         CAST_MAP.put("string", CAST_MAP.get("flair_string"));
         CAST_MAP.remove("varchar");
+        CAST_MAP.remove("int");
+        CAST_MAP.remove("bigint");
     }
 
     @Override
