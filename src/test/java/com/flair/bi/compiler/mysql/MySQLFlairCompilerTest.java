@@ -257,7 +257,7 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	public void parseFlairCast() throws CompilationException {
 		stmtTest(
 				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(bigint, product_id)",
-				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as bigint)");
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as SIGNED)");
 	}
 
 	@Test
@@ -265,6 +265,13 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 		stmtTest(
 				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(Varchar, product_id)",
 				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(product_id as CHAR)");
+	}
+
+	@Test
+	public void parseFlairCastInt() throws CompilationException {
+		stmtTest(
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = __FLAIR_CAST(int, 888) or column1 = __FLAIR_CAST(bigint, 777)",
+				"SELECT updated_on as updated_on FROM shipment3 WHERE column1 = CAST(888 as SIGNED) or column1 = CAST(777 as SIGNED)");
 	}
 
 	@Test

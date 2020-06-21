@@ -33,6 +33,14 @@ public class MySQLListener extends SQLListener {
                         .append(" as CHAR)")
         );
         CAST_MAP.put("varchar", CAST_MAP.get("flair_string"));
+
+        CAST_MAP.put("int",
+                (field) -> new StringBuilder()
+                        .append("CAST(")
+                        .append(field.getFieldName())
+                        .append(" as SIGNED)")
+        );
+        CAST_MAP.put("bigint", CAST_MAP.get("int"));
     }
     
     @Override
