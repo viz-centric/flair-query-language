@@ -159,6 +159,18 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 	}
 
 	@Test
+	public void dateFormatDateTime() throws CompilationException {
+		stmtTest("select date_time(order_date) from transactions where price = 500",
+				"select to_char(order_date::timestamp, 'DD-Mon-YYYY HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatTime() throws CompilationException {
+		stmtTest("select time(order_date) from transactions where price = 500",
+				"select to_char(order_date::timestamp, 'HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
 	public void parseAggregationFunction() throws CompilationException {
 		stmtTest("select column1, count(column2) from my_table where a = 1",
 				"select column1, count(column2) from my_table where a = 1");

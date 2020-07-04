@@ -226,6 +226,18 @@ public class SnowflakeFlairCompilerTest extends AbstractSqlCompilerUnitTest<Snow
 	}
 
 	@Test
+	public void dateFormatDateTime() throws CompilationException {
+		stmtTest("select date_time(order_date) from transactions where price = 500",
+				"select to_char(order_date::timestamp, 'DD-MON-YYYY HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatTime() throws CompilationException {
+		stmtTest("select time(order_date) from transactions where price = 500",
+				"select to_char(order_date::timestamp, 'HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
 	public void flairTruncWithTimestamp() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp) > 0",
 				"select date_trunc('second', inserted_on) from transactions where price = 500 and date_trunc('second', udpated_on) > 0");

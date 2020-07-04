@@ -156,6 +156,18 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 	}
 
 	@Test
+	public void dateFormatDateTime() throws CompilationException {
+		stmtTest("select date_time(order_date) from transactions where price = 500",
+				"select to_char(order_date, 'DD-MON-YYYY HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatTime() throws CompilationException {
+		stmtTest("select time(order_date) from transactions where price = 500",
+				"select to_char(order_date, 'HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
 	public void flairTruncWithTimestamp() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp) > 0",
 				"select CAST(inserted_on as date) from transactions where price = 500 and CAST(udpated_on as date) > 0");

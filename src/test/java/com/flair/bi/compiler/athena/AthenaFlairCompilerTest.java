@@ -253,6 +253,18 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 	}
 
 	@Test
+	public void dateFormatDateTime() throws CompilationException {
+		stmtTest("select date_time(order_date) from transactions where price = 500",
+				"select date_format(CAST(order_date AS TIMESTAMP), '%d-%b-%Y %H:%i') from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatTime() throws CompilationException {
+		stmtTest("select time(order_date) from transactions where price = 500",
+				"select date_format(CAST(order_date AS TIMESTAMP), '%H:%i') from transactions where price = 500");
+	}
+
+	@Test
 	public void flairTruncWithVarchar() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int) > 0",
 				"select inserted_on from transactions where price = 500 and udpated_on > 0");

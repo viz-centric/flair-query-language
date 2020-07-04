@@ -105,6 +105,18 @@ public class SnowflakeListener extends SQLListener {
                 str.append(ctx.func_call_expr().getChild(2).getText());
             }
             str.append("::timestamp)");
+        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "DATE_TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append("to_char(")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append("::timestamp, ")
+                    .append("'DD-MON-YYYY HH24:MI'")
+                    .append(")");
+        } else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append("to_char(")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append("::timestamp, ")
+                    .append("'HH24:MI'")
+                    .append(")");
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText())
                 || "YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
             str.append("to_char(");
