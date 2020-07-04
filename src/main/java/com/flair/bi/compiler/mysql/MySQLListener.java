@@ -91,6 +91,20 @@ public class MySQLListener extends SQLListener {
                     .append(")");
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "DATE_TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append("date_format(CAST(")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
+                    .append("'%d-%b-%Y %H:%i'")
+                    .append(")");
+        }
+        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+                && "TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+            str.append("date_format(CAST(")
+                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
+                    .append("'%H:%i'")
+                    .append(")");
+        }
+        else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
             str.append(extractCombinedDatePart(ctx.func_call_expr(), "YEAR-QUARTER"));
         }

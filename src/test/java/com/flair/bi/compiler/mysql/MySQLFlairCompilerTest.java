@@ -84,6 +84,18 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	}
 
 	@Test
+	public void dateFormatDateTime() throws CompilationException {
+		stmtTest("select date_time(order_date) from transactions where price = 500",
+				"select date_format(CAST(order_date AS TIMESTAMP), '%d-%b-%Y %H:%i') from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatTime() throws CompilationException {
+		stmtTest("select time(order_date) from transactions where price = 500",
+				"select date_format(CAST(order_date AS TIMESTAMP), '%H:%i') from transactions where price = 500");
+	}
+
+	@Test
 	public void dateFormatYearWeek() throws CompilationException {
 		stmtTest("select yearweek('2019-01-09 21:00:00.000000') from transactions where price = 500",
 				"select CONCAT(EXTRACT(YEAR FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f')), '-', EXTRACT(WEEK FROM STR_TO_DATE('2019-01-09 21:00:00.000000','%Y-%m-%d %H:%i:%s.%f'))) from transactions where price = 500");

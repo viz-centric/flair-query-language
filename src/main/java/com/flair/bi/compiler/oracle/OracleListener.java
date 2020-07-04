@@ -136,6 +136,20 @@ public class OracleListener extends SQLListener {
         	}
         	str.append(")");
         }
+		else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+				&& "DATE_TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+			str.append("to_char(")
+					.append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(", ")
+					.append("'DD-MON-YYYY HH24:MI'")
+					.append(")");
+		}
+		else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
+				&& "TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
+			str.append("to_char(")
+					.append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(", ")
+					.append("'HH24:MI'")
+					.append(")");
+		}
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent() && ("week".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "QUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())
         		|| "YEARMONTH".equalsIgnoreCase(ctx.func_call_expr().start.getText()) || "YEARWEEK".equalsIgnoreCase(ctx.func_call_expr().start.getText())
         		|| "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) 

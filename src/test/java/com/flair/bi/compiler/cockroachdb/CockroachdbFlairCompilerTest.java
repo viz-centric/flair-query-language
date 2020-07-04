@@ -142,6 +142,18 @@ public class CockroachdbFlairCompilerTest extends AbstractCompilerUnitTest<Cockr
 	}
 
 	@Test
+	public void dateFormatDateTime() throws CompilationException {
+		stmtTest("select date_time(order_date) from transactions where price = 500",
+				"select to_char(order_date::timestamp, 'DD-Mon-YYYY HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
+	public void dateFormatTime() throws CompilationException {
+		stmtTest("select time(order_date) from transactions where price = 500",
+				"select to_char(order_date::timestamp, 'HH24:MI') from transactions where price = 500");
+	}
+
+	@Test
 	public void parseFlairIntervalOperation() throws CompilationException {
 		stmtTest(
 				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on BETWEEN NOW() AND __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
