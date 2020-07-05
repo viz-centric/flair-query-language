@@ -34,7 +34,8 @@ public class RedshiftListener extends PostgresListener {
 	}
 
 	@Override
-	protected String onDateTruncate(String finalFieldName) {
-		return "date_trunc('second', " + finalFieldName + ")";
+	protected String onDateTruncate(String finalFieldName, String timeUnit) {
+		// second, day
+		return "date_trunc(" + timeUnit + ", " + finalFieldName + ")";
 	}
 }

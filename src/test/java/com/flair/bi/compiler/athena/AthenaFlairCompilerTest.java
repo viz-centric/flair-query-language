@@ -234,7 +234,7 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 
 	@Test
 	public void flairTruncWithTimestamp() throws CompilationException {
-		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp) > 0",
+		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp, 'second') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp, 'second') > 0",
 				"select date_trunc('second', inserted_on) from transactions where price = 500 and date_trunc('second', udpated_on) > 0");
 	}
 
@@ -266,7 +266,7 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 
 	@Test
 	public void flairTruncWithVarchar() throws CompilationException {
-		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int) > 0",
+		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar, 'second') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int, 'second') > 0",
 				"select inserted_on from transactions where price = 500 and udpated_on > 0");
 	}
 

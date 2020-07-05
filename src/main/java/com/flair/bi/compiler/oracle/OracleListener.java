@@ -332,7 +332,18 @@ public class OracleListener extends SQLListener {
 	}
 
 	@Override
-	protected String onDateTruncate(String finalFieldName) {
-		return "CAST(" + finalFieldName + " as date)";
+	protected String onDateTruncate(String finalFieldName, String timeUnit) {
+    	// MI - minute, DD - day
+		String oracleTimeUnit;
+		switch (timeUnit) {
+			case "'day'":
+				oracleTimeUnit = "'DD'";
+				break;
+			case "'second'":
+			case "'minute'":
+			default:
+				oracleTimeUnit = "'MI'";
+		}
+		return "TRUNC(" + finalFieldName + ", " + oracleTimeUnit + ")";
 	}
 }

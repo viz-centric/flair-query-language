@@ -165,7 +165,7 @@ public class KafkaListener extends PostgresListener {
 	}
 
 	@Override
-	protected String onDateTruncate(String finalFieldName) {
-		return null;
+	protected String onDateTruncate(String finalFieldName, String timeUnit) {
+		return finalFieldName;
 	}
 }

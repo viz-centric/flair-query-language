@@ -277,8 +277,9 @@ public class PostgresListener extends SQLListener {
     }
 
     @Override
-    protected String onDateTruncate(String finalFieldName) {
-        return "date_trunc('second', " + finalFieldName + ")";
+    protected String onDateTruncate(String finalFieldName, String timeUnit) {
+        // day, second
+        return "date_trunc(" + timeUnit + ", " + finalFieldName + ")";
     }
 
 }
