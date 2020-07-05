@@ -5,6 +5,7 @@ import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 
 import java.io.Writer;
+import java.util.Optional;
 
 public class RedshiftListener extends PostgresListener {
 	public RedshiftListener(Writer writer) {
@@ -13,7 +14,14 @@ public class RedshiftListener extends PostgresListener {
 
 	@Override
 	protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
-		return "GETDATE(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
+		String curTime = "GETDATE()";
+		Optional<String> expr = Optional.ofNullable(ctx.comma_sep_expr())
+				.map(comma -> comma.expr(0))
+				.map(first -> first.getText());
+		if (expr.isPresent()) {
+			return onDateTruncate(curTime, expr.get());
+		}
+		return curTime;
 	}
 
 	@Override

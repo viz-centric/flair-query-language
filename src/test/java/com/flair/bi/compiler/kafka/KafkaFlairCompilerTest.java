@@ -239,6 +239,14 @@ public class KafkaFlairCompilerTest extends AbstractCompilerUnitTest<KafkaFlairC
 	}
 
 	@Test
+	public void flairFlairNow() throws CompilationException {
+		LocalDateTime now = LocalDateTime.now(clock);
+		String formatted = now.format(ISO_LOCAL_DATE_TIME);
+		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
+				"select STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss''Z''') from transactions where price = 500 and STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss''Z''') > 0");
+	}
+
+	@Test
 	public void flairTruncWithVarchar() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar, 'second') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int, 'second') > 0",
 				"select inserted_on from transactions where price = 500 and udpated_on > 0");

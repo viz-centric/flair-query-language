@@ -299,6 +299,12 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	}
 
 	@Test
+	public void flairFlairNow() throws CompilationException {
+		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
+				"select NOW() from transactions where price = 500 and NOW() > 0");
+	}
+
+	@Test
 	public void flairTruncWithVarchar() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar, 'second') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int, 'second') > 0",
 				"select inserted_on from transactions where price = 500 and udpated_on > 0");

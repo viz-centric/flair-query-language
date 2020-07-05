@@ -323,7 +323,14 @@ public class OracleListener extends SQLListener {
 
 	@Override
 	protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
-		return "sysdate";
+		String curTime = "sysdate";
+		Optional<String> expr = Optional.ofNullable(ctx.comma_sep_expr())
+				.map(comma -> comma.expr(0))
+				.map(first -> first.getText());
+		if (expr.isPresent()) {
+			return onDateTruncate(curTime, expr.get());
+		}
+		return curTime;
 	}
 
 	@Override

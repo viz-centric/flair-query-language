@@ -245,6 +245,12 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 	}
 
 	@Test
+	public void flairFlairNow() throws CompilationException {
+		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
+				"select NOW() from transactions where price = 500 and date_trunc('day', NOW()) > 0");
+	}
+
+	@Test
 	public void flairTruncWithTimestamp() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp, 'second') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp, 'second') > 0",
 				"select date_trunc('second', inserted_on) from transactions where price = 500 and date_trunc('second', udpated_on) > 0");

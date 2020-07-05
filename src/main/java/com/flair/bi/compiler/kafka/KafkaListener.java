@@ -52,7 +52,14 @@ public class KafkaListener extends PostgresListener {
     @Override
     protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
 		String formatted = LocalDateTime.now(clock).format(ISO_DATE_TIME);
-        return "STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss''Z''')";
+		String curTime = "STRINGTOTIMESTAMP('" + formatted + "Z','yyyy-MM-dd''T''HH:mm:ss''Z''')";
+		Optional<String> expr = Optional.ofNullable(ctx.comma_sep_expr())
+				.map(comma -> comma.expr(0))
+				.map(first -> first.getText());
+		if (expr.isPresent()) {
+			return onDateTruncate(curTime, expr.get());
+		}
+		return curTime;
     }
 
     @Override

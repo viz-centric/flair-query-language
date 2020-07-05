@@ -763,7 +763,14 @@ public abstract class SQLListener extends AbstractFQLListener {
     }
 
     protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
-        return "NOW(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
+        String curTime = "NOW()";
+        Optional<String> expr = Optional.ofNullable(ctx.comma_sep_expr())
+                .map(comma -> comma.expr(0))
+                .map(first -> first.getText());
+        if (expr.isPresent()) {
+            return onDateTruncate(curTime, expr.get());
+        }
+        return curTime;
     }
 
     protected Optional<String> getFunctionName(FQLParser.Func_call_exprContext ctx) {

@@ -248,7 +248,14 @@ public class SnowflakeListener extends SQLListener {
 
     @Override
     protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
-        return "CURRENT_TIMESTAMP(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
+        String curTime = "CURRENT_TIMESTAMP()";
+        Optional<String> expr = Optional.ofNullable(ctx.comma_sep_expr())
+                .map(comma -> comma.expr(0))
+                .map(first -> first.getText());
+        if (expr.isPresent()) {
+            return onDateTruncate(curTime, expr.get());
+        }
+        return curTime;
     }
 
     @Override

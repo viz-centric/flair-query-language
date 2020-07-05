@@ -69,7 +69,7 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 
 	@Test
 	public void parseFlairNowFunction() throws CompilationException {
-		stmtTest("select column1, __FLAIR_NOW(test) from my_table where a = 1",
+		stmtTest("select column1, __FLAIR_NOW() from my_table where a = 1",
 				"select column1, sysdate from my_table where a = 1");
 	}
 
@@ -171,6 +171,12 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 	public void flairTruncWithTimestamp() throws CompilationException {
 		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp, 'second'), __FLAIR_TRUNC(inserted_on, timestamp, 'minute'), __FLAIR_TRUNC(inserted_on, timestamp, 'day') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp, 'second') > 0",
 				"select TRUNC(inserted_on, 'MI'), TRUNC(inserted_on, 'MI'), TRUNC(inserted_on, 'DD') from transactions where price = 500 and TRUNC(udpated_on, 'MI') > 0");
+	}
+
+	@Test
+	public void flairFlairNow() throws CompilationException {
+		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
+				"select sysdate from transactions where price = 500 and TRUNC(sysdate, 'DD') > 0");
 	}
 
 	@Test
