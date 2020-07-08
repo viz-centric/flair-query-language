@@ -175,8 +175,8 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 
 	@Test
 	public void flairFlairNow() throws CompilationException {
-		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
-				"select sysdate from transactions where price = 500 and TRUNC(sysdate, 'DD') > 0");
+		stmtTest("select __FLAIR_NOW(), __FLAIR_NOW('day') from transactions where price = 500 and __FLAIR_NOW('day', CUSTOM_NOW()) > 0",
+				"select sysdate, TRUNC(sysdate, 'DD') from transactions where price = 500 and TRUNC(CUSTOM_NOW(), 'DD') > 0");
 	}
 
 	@Test

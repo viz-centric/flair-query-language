@@ -240,8 +240,8 @@ public class AthenaFlairCompilerTest extends AbstractSqlCompilerUnitTest<AthenaF
 
 	@Test
 	public void flairFlairNow() throws CompilationException {
-		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
-				"select NOW() from transactions where price = 500 and date_trunc('day', NOW()) > 0");
+		stmtTest("select __FLAIR_NOW(), __FLAIR_NOW('day') from transactions where price = 500 and __FLAIR_NOW('day', CUSTOM_NOW()) > 0",
+				"select NOW(), date_trunc('day', NOW()) from transactions where price = 500 and date_trunc('day', CUSTOM_NOW()) > 0");
 	}
 
 	@Test

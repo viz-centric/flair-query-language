@@ -182,8 +182,8 @@ public class SparkFlairCompilerTest extends AbstractSqlCompilerUnitTest<SparkFla
 
 	@Test
 	public void flairFlairNow() throws CompilationException {
-		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
-				"select NOW() from transactions where price = 500 and date_trunc(NOW(), 'day') > 0");
+		stmtTest("select __FLAIR_NOW(), __FLAIR_NOW('day') from transactions where price = 500 and __FLAIR_NOW('day', CUSTOM_NOW()) > 0",
+				"select NOW(), date_trunc(NOW(), 'day') from transactions where price = 500 and date_trunc(CUSTOM_NOW(), 'day') > 0");
 	}
 
 	@Test

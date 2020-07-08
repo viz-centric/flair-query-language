@@ -245,8 +245,8 @@ public class SnowflakeFlairCompilerTest extends AbstractSqlCompilerUnitTest<Snow
 
 	@Test
 	public void flairFlairNow() throws CompilationException {
-		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
-				"select CURRENT_TIMESTAMP() from transactions where price = 500 and date_trunc('day', CURRENT_TIMESTAMP()) > 0");
+		stmtTest("select __FLAIR_NOW(), __FLAIR_NOW('day') from transactions where price = 500 and __FLAIR_NOW('day', CUSTOM_NOW()) > 0",
+				"select CURRENT_TIMESTAMP(), date_trunc('day', CURRENT_TIMESTAMP()) from transactions where price = 500 and date_trunc('day', CUSTOM_NOW()) > 0");
 	}
 
 	@Test

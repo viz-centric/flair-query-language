@@ -131,8 +131,8 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 
 	@Test
 	public void selectHavingWithInnerSelect() throws CompilationException {
-		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(NOW(), '-', '4 hours') AND NOW()) LIMIT 20",
-				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (NOW() - interval '4 hours') AND NOW()) LIMIT 20");
+		stmtTest("SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > (SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN __FLAIR_INTERVAL_OPERATION(__FLAIR_NOW('day'), '-', '4 hours') AND NOW()) LIMIT 20",
+				"SELECT product_name as product_name, COUNT(product_price) as product_price FROM Ecommerce GROUP BY product_name HAVING COUNT(product_price) > ( SELECT avg(transaction_quantity) as avg_quantity FROM order_summary WHERE inserted_on BETWEEN (date_trunc('day', NOW()) - interval '4 hours') AND NOW()) LIMIT 20");
 	}
 
 	@Test
@@ -246,8 +246,8 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 
 	@Test
 	public void flairFlairNow() throws CompilationException {
-		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
-				"select NOW() from transactions where price = 500 and date_trunc('day', NOW()) > 0");
+		stmtTest("select __FLAIR_NOW(), __FLAIR_NOW('day') from transactions where price = 500 and __FLAIR_NOW('day', CUSTOM_NOW()) > 0",
+				"select NOW(), date_trunc('day', NOW()) from transactions where price = 500 and date_trunc('day', CUSTOM_NOW()) > 0");
 	}
 
 	@Test

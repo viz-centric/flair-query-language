@@ -216,8 +216,8 @@ public class RedshiftFlairCompilerTest extends AbstractSqlCompilerUnitTest<Redsh
 
 	@Test
 	public void flairFlairNow() throws CompilationException {
-		stmtTest("select __FLAIR_NOW() from transactions where price = 500 and __FLAIR_NOW('day') > 0",
-				"select GETDATE() from transactions where price = 500 and date_trunc('day', GETDATE()) > 0");
+		stmtTest("select __FLAIR_NOW(), __FLAIR_NOW('day') from transactions where price = 500 and __FLAIR_NOW('day', CUSTOM_NOW()) > 0",
+				"select GETDATE(), date_trunc('day', GETDATE()) from transactions where price = 500 and date_trunc('day', CUSTOM_NOW()) > 0");
 	}
 
 	@Test
