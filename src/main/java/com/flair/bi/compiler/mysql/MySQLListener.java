@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -276,6 +277,15 @@ public class MySQLListener extends SQLListener {
     @Override
     protected String getHourOrDaysFromLetter(String letter, String number) {
         return SqlTimeConverter.toSingular(letter);
+    }
+
+    @Override
+    protected String onDateTruncate(String finalFieldName, String timeUnit) {
+        String finalTimeUnit = timeUnit.replaceAll("'", "").toUpperCase();
+        if (Objects.equals(finalTimeUnit, "SECOND") || Objects.equals(finalTimeUnit, "MILLISECOND")) {
+            return finalFieldName;
+        }
+        return "date_add('1900-01-01', interval TIMESTAMPDIFF(" + finalTimeUnit + ", '1900-01-01', " + finalFieldName + ") " + finalTimeUnit + ")";
     }
 
 }
