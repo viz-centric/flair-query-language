@@ -323,7 +323,24 @@ public class OracleListener extends SQLListener {
 
 	@Override
 	protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
-		return "sysdate";
+		String curTime = "sysdate";
+
+		if (ctx.comma_sep_expr() != null) {
+			String strExpr;
+
+			FQLParser.ExprContext expr = ctx.comma_sep_expr().expr(0);
+			if (expr != null) {
+				strExpr = property.get(expr) != null ? property.get(expr) : expr.getText();
+
+				FQLParser.ExprContext expr2 = ctx.comma_sep_expr().expr(1);
+				if (expr2 != null) {
+					curTime = property.get(expr2) != null ? property.get(expr2) : expr2.getText();
+				}
+
+				return onDateTruncate(curTime, strExpr);
+			}
+		}
+		return curTime;
 	}
 
 	@Override
@@ -332,7 +349,18 @@ public class OracleListener extends SQLListener {
 	}
 
 	@Override
-	protected String onDateTruncate(String finalFieldName) {
-		return "CAST(" + finalFieldName + " as date)";
+	protected String onDateTruncate(String finalFieldName, String timeUnit) {
+    	// MI - minute, DD - day
+		String oracleTimeUnit;
+		switch (timeUnit) {
+			case "'day'":
+				oracleTimeUnit = "'DD'";
+				break;
+			case "'second'":
+			case "'minute'":
+			default:
+				oracleTimeUnit = "'MI'";
+		}
+		return "TRUNC(" + finalFieldName + ", " + oracleTimeUnit + ")";
 	}
 }

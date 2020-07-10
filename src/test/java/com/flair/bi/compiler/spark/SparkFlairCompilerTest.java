@@ -176,13 +176,19 @@ public class SparkFlairCompilerTest extends AbstractSqlCompilerUnitTest<SparkFla
 
 	@Test
 	public void flairTruncWithTimestamp() throws CompilationException {
-		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp) > 0",
+		stmtTest("select __FLAIR_TRUNC(inserted_on, timestamp, 'second') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, timestamp, 'second') > 0",
 				"select date_trunc(inserted_on, 'second') from transactions where price = 500 and date_trunc(udpated_on, 'second') > 0");
 	}
 
 	@Test
+	public void flairFlairNow() throws CompilationException {
+		stmtTest("select __FLAIR_NOW(), __FLAIR_NOW('day') from transactions where price = 500 and __FLAIR_NOW('day', CUSTOM_NOW()) > 0",
+				"select NOW(), date_trunc(NOW(), 'day') from transactions where price = 500 and date_trunc(CUSTOM_NOW(), 'day') > 0");
+	}
+
+	@Test
 	public void flairTruncWithVarchar() throws CompilationException {
-		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar) from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int) > 0",
+		stmtTest("select __FLAIR_TRUNC(inserted_on, varchar, 'second') from transactions where price = 500 and __FLAIR_TRUNC(udpated_on, int, 'second') > 0",
 				"select inserted_on from transactions where price = 500 and udpated_on > 0");
 	}
 

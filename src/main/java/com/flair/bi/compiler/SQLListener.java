@@ -746,6 +746,7 @@ public abstract class SQLListener extends AbstractFQLListener {
     }
 
     protected String onFlairTruncFunction(FQLParser.Func_call_exprContext func_call_expr) {
+        String timeUnit = func_call_expr.getChild(2).getChild(4).getText();
         String dataType = func_call_expr.getChild(2).getChild(2).getText();
         ParseTree fieldName = func_call_expr.getChild(2).getChild(0);
         String finalFieldName = property.get(fieldName) != null ? property.get(fieldName) : fieldName.getText();
@@ -754,17 +755,32 @@ public abstract class SQLListener extends AbstractFQLListener {
             return finalFieldName;
         }
 
-        String truncated = onDateTruncate(finalFieldName);
-        return truncated == null ? finalFieldName : truncated;
-
+        return onDateTruncate(finalFieldName, timeUnit);
     }
 
-    protected String onDateTruncate(String finalFieldName) {
-        return null;
+    protected String onDateTruncate(String finalFieldName, String timeUnit) {
+        return finalFieldName;
     }
 
     protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
-        return "NOW(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
+        String curTime = "NOW()";
+
+        if (ctx.comma_sep_expr() != null) {
+            String strExpr;
+
+            FQLParser.ExprContext expr = ctx.comma_sep_expr().expr(0);
+            if (expr != null) {
+                strExpr = property.get(expr) != null ? property.get(expr) : expr.getText();
+
+                FQLParser.ExprContext expr2 = ctx.comma_sep_expr().expr(1);
+                if (expr2 != null) {
+                    curTime = property.get(expr2) != null ? property.get(expr2) : expr2.getText();
+                }
+
+                return onDateTruncate(curTime, strExpr);
+            }
+        }
+        return curTime;
     }
 
     protected Optional<String> getFunctionName(FQLParser.Func_call_exprContext ctx) {

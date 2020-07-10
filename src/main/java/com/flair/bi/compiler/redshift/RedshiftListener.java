@@ -13,7 +13,24 @@ public class RedshiftListener extends PostgresListener {
 
 	@Override
 	protected String onFlairNowFunction(FQLParser.Func_call_exprContext ctx) {
-		return "GETDATE(" + (ctx.comma_sep_expr() != null ? ctx.comma_sep_expr().getText() : "") + ")";
+		String curTime = "GETDATE()";
+
+		if (ctx.comma_sep_expr() != null) {
+			String strExpr;
+
+			FQLParser.ExprContext expr = ctx.comma_sep_expr().expr(0);
+			if (expr != null) {
+				strExpr = property.get(expr) != null ? property.get(expr) : expr.getText();
+
+				FQLParser.ExprContext expr2 = ctx.comma_sep_expr().expr(1);
+				if (expr2 != null) {
+					curTime = property.get(expr2) != null ? property.get(expr2) : expr2.getText();
+				}
+
+				return onDateTruncate(curTime, strExpr);
+			}
+		}
+		return curTime;
 	}
 
 	@Override
@@ -34,7 +51,8 @@ public class RedshiftListener extends PostgresListener {
 	}
 
 	@Override
-	protected String onDateTruncate(String finalFieldName) {
-		return "date_trunc('second', " + finalFieldName + ")";
+	protected String onDateTruncate(String finalFieldName, String timeUnit) {
+		// second, day
+		return "date_trunc(" + timeUnit + ", " + finalFieldName + ")";
 	}
 }

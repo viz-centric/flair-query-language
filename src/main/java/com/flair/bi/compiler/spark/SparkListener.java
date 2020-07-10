@@ -63,8 +63,9 @@ public class SparkListener extends SQLListener {
     }
 
     @Override
-    protected String onDateTruncate(String finalFieldName) {
-        return "date_trunc(" + finalFieldName + ", 'second')";
+    protected String onDateTruncate(String finalFieldName, String timeUnit) {
+        // day, second
+        return "date_trunc(" + finalFieldName + ", " + timeUnit + ")";
     }
 
 
