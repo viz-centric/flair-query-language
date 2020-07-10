@@ -191,8 +191,8 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 	@Test
 	public void parseFlairTypeCast() throws CompilationException {
 		stmtTest(
-				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000000') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
-				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= to_timestamp('2019-11-03 22:00:00.000000','YYYY-MM-DD HH24:MI:SS.US') GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
+				"SELECT updated_on as updated_on,COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= __FLAIR_CAST(timestamp, '2019-11-03 22:00:00.000000') and __FLAIR_CAST(double, 20) > 0 GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0",
+				"SELECT updated_on as updated_on, COUNT(transaction_quantity) as transaction_quantity FROM shipment3 WHERE updated_on >= to_timestamp('2019-11-03 22:00:00.000000','YYYY-MM-DD HH24:MI:SS.US') and CAST(20 as double precision) > 0 GROUP BY updated_on ORDER BY transaction_quantity DESC,updated_on DESC LIMIT 20 OFFSET 0");
 	}
 
 	@Test
