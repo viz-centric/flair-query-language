@@ -22,6 +22,14 @@ public class PostgresListener extends SQLListener {
                         .append(")"));
         CAST_MAP.put("datetime", CAST_MAP.get("timestamp"));
         CAST_MAP.put("date", CAST_MAP.get("timestamp"));
+        CAST_MAP.put("double",
+                (field) -> new StringBuilder()
+                        .append("CAST(")
+                        .append(field.getFieldName())
+                        .append(" as ")
+                        .append(field.getDataType())
+                        .append(" precision)")
+        );
     }
 
     /**
