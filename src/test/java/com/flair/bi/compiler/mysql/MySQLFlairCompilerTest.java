@@ -86,13 +86,13 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void dateFormatDateTime() throws CompilationException {
 		stmtTest("select date_time(order_date) from transactions where price = 500",
-				"select date_format(CAST(order_date AS TIMESTAMP), '%d-%b-%Y %H:%i') from transactions where price = 500");
+				"select date_format(CAST(order_date AS DATETIME), '%d-%b-%Y %H:%i') from transactions where price = 500");
 	}
 
 	@Test
 	public void dateFormatTime() throws CompilationException {
 		stmtTest("select time(order_date) from transactions where price = 500",
-				"select date_format(CAST(order_date AS TIMESTAMP), '%H:%i') from transactions where price = 500");
+				"select date_format(CAST(order_date AS DATETIME), '%H:%i') from transactions where price = 500");
 	}
 
 	@Test
@@ -188,7 +188,7 @@ public class MySQLFlairCompilerTest extends AbstractSqlCompilerUnitTest<MySQLFla
 	@Test
 	public void parseDateFunction() throws CompilationException {
 		stmtTest("select datefmt(custom_field, '%y %M %d') from my_table where a = 1",
-				"select date_format(CAST(custom_field AS TIMESTAMP), '%y %M %d') from my_table where a = 1");
+				"select date_format(CAST(custom_field AS DATETIME), '%y %M %d') from my_table where a = 1");
 	}
 
 	@Test

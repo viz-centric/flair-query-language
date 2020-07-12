@@ -33,6 +33,31 @@ public class AthenaListener extends MySQLListener {
     }
 
     @Override
+    protected StringBuilder onDateFmt(FQLParser.ExprContext ctx) {
+        return new StringBuilder().append("date_format(CAST(")
+                .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
+                .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
+                .append(")");
+    }
+
+    @Override
+    protected StringBuilder onTime(FQLParser.ExprContext ctx) {
+        return new StringBuilder().append("date_format(CAST(")
+                .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
+                .append("'%H:%i'")
+                .append(")");
+    }
+
+    @Override
+    protected StringBuilder onDateTime(FQLParser.ExprContext ctx) {
+        return new StringBuilder()
+                .append("date_format(CAST(")
+                .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
+                .append("'%d-%b-%Y %H:%i'")
+                .append(")");
+    }
+
+    @Override
     public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
         StringBuilder sb = new StringBuilder();
         sb.append("SHOW TABLES");
