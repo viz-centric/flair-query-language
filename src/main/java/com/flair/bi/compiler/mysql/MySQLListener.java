@@ -86,24 +86,15 @@ public class MySQLListener extends SQLListener {
                     .append(")");
         } else if (Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && ("datefmt".equalsIgnoreCase(ctx.func_call_expr().start.getText()))) {
-            str.append("date_format(CAST(")
-                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
-                    .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
-                    .append(")");
+            str.append(onDateFmt(ctx));
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "DATE_TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-            str.append("date_format(CAST(")
-                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
-                    .append("'%d-%b-%Y %H:%i'")
-                    .append(")");
+            str.append(onDateTime(ctx));
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "TIME".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
-            str.append("date_format(CAST(")
-                    .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS TIMESTAMP), ")
-                    .append("'%H:%i'")
-                    .append(")");
+            str.append(onTime(ctx));
         }
         else if(Optional.ofNullable(ctx.func_call_expr()).isPresent()
                 && "YEARQUARTER".equalsIgnoreCase(ctx.func_call_expr().start.getText())) {
@@ -232,6 +223,28 @@ public class MySQLListener extends SQLListener {
         property.put(ctx, str.toString());
         
 	}
+
+    protected StringBuilder onDateFmt(ExprContext ctx) {
+        return new StringBuilder().append("date_format(CAST(")
+                .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS DATETIME), ")
+                .append(ctx.func_call_expr().getChild(2).getChild(2).getText())
+                .append(")");
+    }
+
+    protected StringBuilder onTime(ExprContext ctx) {
+        return new StringBuilder().append("date_format(CAST(")
+                .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS DATETIME), ")
+                .append("'%H:%i'")
+                .append(")");
+    }
+
+    protected StringBuilder onDateTime(ExprContext ctx) {
+        return new StringBuilder()
+                .append("date_format(CAST(")
+                .append(ctx.func_call_expr().getChild(2).getChild(0).getText()).append(" AS DATETIME), ")
+                .append("'%d-%b-%Y %H:%i'")
+                .append(")");
+    }
 
     private CharSequence extractCombinedDatePart(FQLParser.Func_call_exprContext func_call_expr, String type) {
         String[] split = type.split("-");
