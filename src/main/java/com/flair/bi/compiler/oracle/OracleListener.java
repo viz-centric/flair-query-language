@@ -28,7 +28,7 @@ public class OracleListener extends SQLListener {
 				(field) -> new StringBuilder()
 						.append("CAST(")
 						.append(field.getFieldName())
-						.append(" as varchar(").append(field.getFieldName().length()).append("))")
+						.append(" as varchar(256))")
 		);
 
 		CAST_MAP.put("nvarchar2",
@@ -37,7 +37,7 @@ public class OracleListener extends SQLListener {
 						.append(field.getFieldName())
 						.append(" as ")
 						.append(field.getDataType())
-						.append("(").append(field.getFieldName().length()).append(")")
+						.append("(256)")
 						.append(")")
 		);
 		CAST_MAP.put("varchar2", CAST_MAP.get("nvarchar2"));
