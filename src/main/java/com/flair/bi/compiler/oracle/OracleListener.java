@@ -47,6 +47,19 @@ public class OracleListener extends SQLListener {
     }
 
 	@Override
+	protected StringBuilder onRawQuery(FQLParser.Table_or_subqueryContext ctx, FQLParser.Raw_queryContext x) {
+		StringBuilder str = new StringBuilder();
+		str.append("(")
+				.append(x.getText(), 2, x.getText().length() - 2)
+				.append(")")
+				.append(" ");
+
+		Optional.ofNullable(property.get(ctx.table_alias()))
+				.ifPresent(str::append);
+		return str;
+	}
+
+	@Override
 	public void exitFunction_name(Function_nameContext ctx) {
 		 if (ctx.getText().equals("rand")) {
 	            property.put(ctx, "dbms_random.value");
