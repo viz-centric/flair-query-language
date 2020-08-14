@@ -127,22 +127,26 @@ public class SnowflakeFlairCompilerTest extends AbstractSqlCompilerUnitTest<Snow
 
 	@Test
 	public void showTables() throws CompilationException {
-		stmtTest("show tables", "SHOW TABLES");
+		stmtTest("show tables",
+				"SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') UNION ALL SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.TABLES WHERE table_schema NOT IN ('information_schema', 'pg_catalog')");
 	}
 
 	@Test
 	public void showTablesLike() throws CompilationException {
-		stmtTest("show tables like '%pera%'", "SHOW TABLES LIKE '%pera%'");
-	}
-
-	@Test
-	public void showTablesLikeLimit() throws CompilationException {
-		stmtTest("show tables like '%pera%' limit 4", "SHOW TABLES LIKE '%pera%'");
+		stmtTest("show tables like '%para%'",
+				"SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND UPPER(TABLE_NAME) LIKE UPPER('%para%') UNION ALL SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.TABLES WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND UPPER(TABLE_NAME) LIKE UPPER('%para%')");
 	}
 
 	@Test
 	public void showTablesLimit() throws CompilationException {
-		stmtTest("show tables limit 5", "SHOW TABLES");
+		stmtTest("show tables limit 4",
+				"SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') UNION ALL SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.TABLES WHERE table_schema NOT IN ('information_schema', 'pg_catalog') LIMIT 4");
+	}
+
+	@Test
+	public void showTablesLikeLimit() throws CompilationException {
+		stmtTest("show tables like '%para%' limit 5",
+				"SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND UPPER(TABLE_NAME) LIKE UPPER('%para%') UNION ALL SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.TABLES WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND UPPER(TABLE_NAME) LIKE UPPER('%para%') LIMIT 5");
 	}
 
 	@Test

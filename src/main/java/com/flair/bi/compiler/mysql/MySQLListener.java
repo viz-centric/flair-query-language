@@ -2,6 +2,7 @@ package com.flair.bi.compiler.mysql;
 
 import com.flair.bi.compiler.FlairCastData;
 import com.flair.bi.compiler.SQLListener;
+import com.flair.bi.compiler.components.PrestoParser;
 import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
@@ -285,6 +286,11 @@ public class MySQLListener extends SQLListener {
                 operator +
                 " " + "interval " + number + " " + hourOrDays +
                 ")";
+    }
+
+    @Override
+    public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
+        property.put(ctx, PrestoParser.exitDescribe_stmt(ctx));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.flair.bi.compiler.snowflake;
 
 import com.flair.bi.compiler.SQLListener;
+import com.flair.bi.compiler.components.PrestoParser;
 import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
@@ -289,5 +290,10 @@ public class SnowflakeListener extends SQLListener {
     protected String onDateTruncate(String finalFieldName, String timeUnit) {
         // second, day
         return "date_trunc(" + timeUnit + ", " + finalFieldName + ")";
+    }
+
+    @Override
+    public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
+        property.put(ctx, PrestoParser.exitDescribe_stmt(ctx));
     }
 }

@@ -1,6 +1,7 @@
 package com.flair.bi.compiler.postgres;
 
 import com.flair.bi.compiler.SQLListener;
+import com.flair.bi.compiler.components.PrestoParser;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -268,20 +269,7 @@ public class PostgresListener extends SQLListener {
 
     @Override
     public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT tablename FROM pg_catalog.pg_tables");
-
-        if (ctx.describe_stmt_like() != null) {
-            sb.append(" WHERE tablename LIKE ")
-                    .append(ctx.describe_stmt_like().expr().getText());
-        }
-
-        if (ctx.describe_stmt_limit() != null) {
-            sb.append(" LIMIT ")
-                    .append(ctx.describe_stmt_limit().expr().getText());
-        }
-
-        property.put(ctx, sb.toString());
+        property.put(ctx, PrestoParser.exitDescribe_stmt(ctx));
     }
 
     @Override
