@@ -1,5 +1,6 @@
 package com.flair.bi.compiler.athena;
 
+import com.flair.bi.compiler.components.PrestoParser;
 import com.flair.bi.compiler.mysql.MySQLListener;
 import com.flair.bi.grammar.FQLParser;
 
@@ -59,14 +60,7 @@ public class AthenaListener extends MySQLListener {
 
     @Override
     public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SHOW TABLES");
-
-        if (ctx.describe_stmt_like() != null) {
-            sb.append(" ").append(ctx.describe_stmt_like().expr().getText().replaceAll("%", "*"));
-        }
-
-        property.put(ctx, sb.toString());
+        property.put(ctx, PrestoParser.exitDescribe_stmt(ctx));
     }
 
     /**
