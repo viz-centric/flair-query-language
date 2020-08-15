@@ -20,6 +20,11 @@ public class PostgresFlairCompilerTest extends AbstractCompilerUnitTest<Postgres
 	}
 
 	@Test
+	public void testSelectWithDatabaseStmt() throws CompilationException {
+		stmtTest("Select data from public.transactions");
+	}
+
+	@Test
 	public void testSelectStmtGroupBy() throws CompilationException {
 		stmtTest("Select data, sum(price) as price from transactions group by data");
 	}

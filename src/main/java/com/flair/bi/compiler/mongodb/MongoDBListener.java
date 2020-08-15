@@ -464,7 +464,7 @@ public class MongoDBListener extends AbstractFQLListener {
                 .ifPresent(x -> {
                     Optional.ofNullable(ctx.database_name())
                             .map(property::get)
-                            .ifPresent(y -> str.append(y).append(". "));
+                            .ifPresent(y -> str.append(y).append("."));
 
                     str.append(x)
                             .append(ctx.K_AS() == null ? "" : ctx.K_AS().getText() + " ");
