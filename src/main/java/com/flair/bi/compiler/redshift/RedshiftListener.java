@@ -1,5 +1,6 @@
 package com.flair.bi.compiler.redshift;
 
+import com.flair.bi.compiler.components.PrestoParser;
 import com.flair.bi.compiler.postgres.PostgresListener;
 import com.flair.bi.compiler.utils.SqlTimeConverter;
 import com.flair.bi.grammar.FQLParser;
@@ -54,5 +55,10 @@ public class RedshiftListener extends PostgresListener {
 	protected String onDateTruncate(String finalFieldName, String timeUnit) {
 		// second, day
 		return "date_trunc(" + timeUnit + ", " + finalFieldName + ")";
+	}
+
+	@Override
+	public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
+		property.put(ctx, PrestoParser.exitDescribe_stmt(ctx));
 	}
 }

@@ -1,7 +1,6 @@
 package com.flair.bi.compiler.postgres;
 
 import com.flair.bi.compiler.SQLListener;
-import com.flair.bi.compiler.components.PrestoParser;
 import com.flair.bi.grammar.FQLParser;
 import com.flair.bi.grammar.FQLParser.ExprContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -269,7 +268,32 @@ public class PostgresListener extends SQLListener {
 
     @Override
     public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
-        property.put(ctx, PrestoParser.exitDescribe_stmt(ctx));
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.views WHERE table_schema NOT IN ('information_schema', 'pg_catalog') ");
+
+        StringBuilder sbLike = new StringBuilder();
+        if (ctx.describe_stmt_like() != null) {
+            sbLike.append("AND UPPER(TABLE_NAME) LIKE UPPER(")
+                    .append(ctx.describe_stmt_like().expr().getText())
+                    .append(") ");
+        }
+
+        sb.append(sbLike)
+                .append("UNION ALL SELECT CONCAT(TABLE_SCHEMA, '.', TABLE_NAME) FROM information_schema.TABLES WHERE table_schema NOT IN ('information_schema', 'pg_catalog') ")
+                .append(sbLike)
+                .append("UNION ALL SELECT CONCAT(schemaname, '.', matviewname) FROM pg_catalog.pg_matviews ");
+
+        if (ctx.describe_stmt_like() != null) {
+            sb.append("WHERE UPPER(matviewname) LIKE UPPER(")
+                    .append(ctx.describe_stmt_like().expr().getText())
+                    .append(") ");
+        }
+
+        if (ctx.describe_stmt_limit() != null) {
+            sb.append("LIMIT ")
+                    .append(ctx.describe_stmt_limit().expr().getText());
+        }
+        property.put(ctx, sb.toString().trim());
     }
 
     @Override
