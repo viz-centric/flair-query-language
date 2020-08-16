@@ -307,21 +307,37 @@ public class OracleListener extends SQLListener {
     @Override
 	public void exitDescribe_stmt(FQLParser.Describe_stmtContext ctx) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT table_name FROM dba_tables");
+		sb.append("SELECT CONCAT(owner, CONCAT('.', table_name)) FROM sys.all_tables ");
 
 		if (ctx.describe_stmt_like() != null) {
-			sb.append(" WHERE upper(table_name) LIKE upper(")
+			sb.append("WHERE upper(table_name) LIKE upper(")
 					.append(ctx.describe_stmt_like().expr().getText())
-					.append(")");
+					.append(") ");
+		}
+
+		sb.append("UNION ALL SELECT CONCAT(owner, CONCAT('.', view_name)) FROM sys.all_views ");
+
+		if (ctx.describe_stmt_like() != null) {
+			sb.append("WHERE upper(view_name) LIKE upper(")
+					.append(ctx.describe_stmt_like().expr().getText())
+					.append(") ");
+		}
+
+		sb.append("UNION ALL SELECT CONCAT(owner, CONCAT('.', mview_name)) FROM sys.all_mviews ");
+
+		if (ctx.describe_stmt_like() != null) {
+			sb.append("WHERE upper(mview_name) LIKE upper(")
+					.append(ctx.describe_stmt_like().expr().getText())
+					.append(") ");
 		}
 
 		if (ctx.describe_stmt_limit() != null) {
-			sb.append(" FETCH NEXT ")
+			sb.append("FETCH NEXT ")
 					.append(ctx.describe_stmt_limit().expr().getText())
-					.append(" ROWS ONLY");
+					.append(" ROWS ONLY ");
         }
 
-		property.put(ctx, sb.toString());
+		property.put(ctx, sb.toString().trim());
 	}
 
 	@Override
