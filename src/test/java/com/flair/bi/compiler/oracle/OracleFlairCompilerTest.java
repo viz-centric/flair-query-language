@@ -13,18 +13,26 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 
 	@Test
 	public void showTables() throws CompilationException {
-		stmtTest("show tables", "SELECT table_name FROM dba_tables");
+		stmtTest("show tables",
+				"SELECT CONCAT(owner, CONCAT('.', table_name)) FROM sys.all_tables UNION ALL SELECT CONCAT(owner, CONCAT('.', view_name)) FROM sys.all_views UNION ALL SELECT CONCAT(owner, CONCAT('.', mview_name)) FROM sys.all_mviews");
 	}
 
 	@Test
 	public void showTablesLike() throws CompilationException {
 		stmtTest("show tables like '%pera%'",
-				"SELECT table_name FROM dba_tables WHERE upper(table_name) LIKE upper('%pera%')");
+				"SELECT CONCAT(owner, CONCAT('.', table_name)) FROM sys.all_tables WHERE upper(table_name) LIKE upper('%pera%') UNION ALL SELECT CONCAT(owner, CONCAT('.', view_name)) FROM sys.all_views WHERE upper(view_name) LIKE upper('%pera%') UNION ALL SELECT CONCAT(owner, CONCAT('.', mview_name)) FROM sys.all_mviews WHERE upper(mview_name) LIKE upper('%pera%')");
 	}
 
 	@Test
 	public void showTablesLimit() throws CompilationException {
-		stmtTest("show tables limit 4", "SELECT table_name FROM dba_tables FETCH NEXT 4 ROWS ONLY");
+		stmtTest("show tables limit 4",
+				"SELECT CONCAT(owner, CONCAT('.', table_name)) FROM sys.all_tables UNION ALL SELECT CONCAT(owner, CONCAT('.', view_name)) FROM sys.all_views UNION ALL SELECT CONCAT(owner, CONCAT('.', mview_name)) FROM sys.all_mviews FETCH NEXT 4 ROWS ONLY");
+	}
+
+	@Test
+	public void showTablesLikeLimit() throws CompilationException {
+		stmtTest("show tables like '%pera%' limit 4",
+				"SELECT CONCAT(owner, CONCAT('.', table_name)) FROM sys.all_tables WHERE upper(table_name) LIKE upper('%pera%') UNION ALL SELECT CONCAT(owner, CONCAT('.', view_name)) FROM sys.all_views WHERE upper(view_name) LIKE upper('%pera%') UNION ALL SELECT CONCAT(owner, CONCAT('.', mview_name)) FROM sys.all_mviews WHERE upper(mview_name) LIKE upper('%pera%') FETCH NEXT 4 ROWS ONLY");
 	}
 
 	@Test
@@ -35,12 +43,6 @@ public class OracleFlairCompilerTest extends AbstractSqlCompilerUnitTest<OracleF
 	@Test
 	public void selectWithLimitAndOffset() throws CompilationException {
 		stmtTest("SELECT * FROM ORDERS LIMIT 1 OFFSET 5", "SELECT * FROM ORDERS OFFSET 5 ROWS FETCH NEXT 1 ROWS ONLY");
-	}
-
-	@Test
-	public void showTablesLikeLimit() throws CompilationException {
-		stmtTest("show tables like '%pera%' limit 4",
-				"SELECT table_name FROM dba_tables WHERE upper(table_name) LIKE upper('%pera%') FETCH NEXT 4 ROWS ONLY");
 	}
 
 	@Test
