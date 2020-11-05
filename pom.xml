@@ -24,6 +24,7 @@
 		<project.scm.url>https://@github.com/viz-centric/flair-query-language.git</project.scm.url>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<bucket.name>vizcentric-mvn-repo</bucket.name>
+		<aws-maven.version>5.0.0.RELEASE</aws-maven.version>
 	</properties>
 	<scm>
         <connection>scm:git:${project.scm.url}</connection>
@@ -69,6 +70,13 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<extensions>
+			<extension>
+                <groupId>org.springframework.build</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>${aws-maven.version}</version>
+            </extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
