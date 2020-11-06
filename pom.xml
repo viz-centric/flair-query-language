@@ -10,7 +10,7 @@
 		<java.version>1.8</java.version>
 		<antlr4.version>4.5</antlr4.version>
 		<maven-compiler.version>3.7.0</maven-compiler.version>
-		<bi-common.version>1.4.18-SNAPSHOT</bi-common.version>
+		<bi-common.version>1.4.7</bi-common.version>
 		<builder-helper.version>1.8</builder-helper.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.16.0</mockito.version>
@@ -42,7 +42,20 @@
             <name>AWS Snapshot Repository</name>
             <url>s3://${bucket.name}/snapshot</url>
         </snapshotRepository>
-    </distributionManagement>
+	</distributionManagement>
+	
+	<repositories>
+		<repository>
+			<id>dev-azure-com-vizcentric-flair-commons</id>
+			<url>https://pkgs.dev.azure.com/VizCentric/_packaging/flair-commons/maven/v1</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	
 
 	<dependencies>
