@@ -51,12 +51,14 @@ public class BigqueryFlairCompilerTest extends AbstractCompilerUnitTest<Bigquery
 
 	@Test
 	public void multipleTestCaseSimple() throws CompilationException {
-		stmtTest("select * from `bigquery-public-data.chicago_taxi_trips.transactions`; select data from `bigquery-public-data.chicago_taxi_trips.transactions`");
+		stmtTest("select * from `bigquery-public-data.chicago_taxi_trips.transactions`; select data from `bigquery-public-data.chicago_taxi_trips.transactions`",
+				"select * from `bigquery-public-data.chicago_taxi_trips.transactions`;select data from `bigquery-public-data.chicago_taxi_trips.transactions`");
 	}
 
 	@Test
 	public void multipleTestCaseComplex() throws CompilationException {
-		stmtTest("select * from `bigquery-public-data.chicago_taxi_trips.transactions` group by data order by price asc; select data where price between 10 and 200");
+		stmtTest("select * from `bigquery-public-data.chicago_taxi_trips.transactions` group by data order by price asc; select data where price between 10 and 200",
+				"select * from `bigquery-public-data.chicago_taxi_trips.transactions` group by data order by price asc;select data where price between 10 and 200");
 	}
 
 	@Test
@@ -136,25 +138,25 @@ public class BigqueryFlairCompilerTest extends AbstractCompilerUnitTest<Bigquery
 
 	@Test
 	public void showTables() throws CompilationException {
-		stmtTest("show tables",
+		stmtTest("show tables (schema bigquery-public-data.chicago_taxi_trips)",
 				"SELECT CONCAT(table_catalog, '.', table_schema, '.', TABLE_NAME) FROM `bigquery-public-data.chicago_taxi_trips.INFORMATION_SCHEMA.TABLES` WHERE table_schema NOT IN ('information_schema', 'pg_catalog')");
 	}
 
 	@Test
 	public void showTablesLike() throws CompilationException {
-		stmtTest("show tables like '%para%'",
+		stmtTest("show tables (schema bigquery-public-data.chicago_taxi_trips) like '%para%'",
 				"SELECT CONCAT(table_catalog, '.', table_schema, '.', TABLE_NAME) FROM `bigquery-public-data.chicago_taxi_trips.INFORMATION_SCHEMA.TABLES` WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND UPPER(TABLE_NAME) LIKE UPPER('%para%')");
 	}
 
 	@Test
 	public void showTablesLimit() throws CompilationException {
-		stmtTest("show tables limit 4",
+		stmtTest("show tables (schema bigquery-public-data.chicago_taxi_trips) limit 4",
 				"SELECT CONCAT(table_catalog, '.', table_schema, '.', TABLE_NAME) FROM `bigquery-public-data.chicago_taxi_trips.INFORMATION_SCHEMA.TABLES` WHERE table_schema NOT IN ('information_schema', 'pg_catalog') LIMIT 4");
 	}
 
 	@Test
 	public void showTablesLikeLimit() throws CompilationException {
-		stmtTest("show tables like '%para%' limit 5",
+		stmtTest("show tables (schema bigquery-public-data.chicago_taxi_trips) like '%para%' limit 5",
 				"SELECT CONCAT(table_catalog, '.', table_schema, '.', TABLE_NAME) FROM `bigquery-public-data.chicago_taxi_trips.INFORMATION_SCHEMA.TABLES` WHERE table_schema NOT IN ('information_schema', 'pg_catalog') AND UPPER(TABLE_NAME) LIKE UPPER('%para%') LIMIT 5");
 	}
 
