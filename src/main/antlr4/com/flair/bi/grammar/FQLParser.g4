@@ -36,8 +36,12 @@ describe_stmt_limit
  : K_LIMIT expr
  ;
 
+describe_stmt_schema
+ : K_SCHEMA expr
+ ;
+
 describe_stmt
- : K_SHOW K_TABLES describe_stmt_like? describe_stmt_limit?
+ : K_SHOW K_TABLES ('(' describe_stmt_schema ')')? describe_stmt_like? describe_stmt_limit?
  ;
 
 select_stmt
